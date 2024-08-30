@@ -2,7 +2,7 @@
 #define REGEX_SCANNER
 
 #include <string>
-
+#include <vector>
 
 enum TokenType
 {
@@ -20,6 +20,15 @@ enum TokenType
     OR,
     ESCAPE,
 };
+
+
+enum ERROR
+{
+    CONSUME_AT_END,
+
+};
+
+
 
 class Token
 {
@@ -40,9 +49,19 @@ public:
     RegexScanner(const std::string& regex);
     ~RegexScanner();
 
+    
+    std::vector<Token> GetTokens();
 private:
+    void ScanRegex();
+    bool AtEnd();
+    char ConsumeChar();
+    
+
     int m_CurrIndex;
+    char m_PrevCharacter;
     std::string m_Regex;
+    std::vector<Token> m_Tokens;
+    ERROR m_ErrorCode;
 };
 
 
