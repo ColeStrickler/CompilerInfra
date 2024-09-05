@@ -25,34 +25,41 @@ using TokenKind = a_lang::Parser::token;
 %option noyywrap
 %option c++
 
+
+
+
+
+
+
+
 DIGIT [0-9]
-INTEGER (DIGIT)+
-IDENTIFIER [a-zA-Z_](DIGIT | [a-zA-Z] | _)*
-STRING \"(\\n | \\t | \\" | \\ | [^"\\])\"
+INTEGER [0-9]+
+IDENTIFIER [a-zA-Z_]([a-zA-Z0-9_])*
+STRING \"(\\[nt\\"\\]|[^"\\])*\"
 COMMENT \#.*
-WHITESPACE [ \t\r]+
+WHITESPACE " "
 ASSIGN =
 COLON :
 COMMA ,
-CROSS +
-DASH -    
+CROSS \+
+DASH \-    
 EQUALS ==
 GREATER >
 GREATEREQ >=
-LCURLY {
+LCURLY \{
 LESS <
 LESSEQ <=    
-LPAREN (
+LPAREN \(
 NOT !
 REF &
 NOTEQUALS !=
 POSTDEC --
-POSTINC ++    
-RCURLY }
-RPAREN )
+POSTINC \+\+    
+RCURLY \}
+RPAREN \)
 SEMICOL ;
-SLASH /
-STAR *
+SLASH \/
+STAR \*
 ARROW ->  
 
 
@@ -63,31 +70,45 @@ ARROW ->
 %}
 
 
-IDENTIFIER {
-	auto tokenKind = TokenKind::ID;
+
+
+{IDENTIFIER} {
+
+	int tokenKind;
+	Token* tok;
 	auto pos = new Position(lineNum, colNum, lineNum, colNum+strlen(yytext));
-	auto tok = new IDToken(pos, yytext);
+	if (isKeyword(yytext))
+	{
+		tokenKind = GetKeywordTokenKind(yytext);
+		tok = new Token(pos, tokenKind);
+	}
+	else 
+	{
+		tokenKind = TokenKind::ID;
+		tok = new IDToken(pos, yytext);
+	}
+	
 	this->yylval->emplace<a_lang::Token *>(tok);
-	colNum++;
+	colNum += strlen(yytext);
 	return tokenKind;
 }
 
-STRING {
+{STRING} {
 	int tokenKind = TokenKind::STRINGLITERAL;
 	auto pos = new Position(lineNum, colNum, lineNum, colNum+strlen(yytext));
 	auto tok = new StrToken(pos, yytext);
 	this->yylval->emplace<a_lang::Token *>(tok);
-	colNum++;
+	colNum += strlen(yytext);
 	return tokenKind;
 }
 
-COMMENT {}
-WHITESPACE {}
+{COMMENT} {}
+{WHITESPACE} {colNum++;}
 
     
     
     
-ASSIGN 	{
+{ASSIGN} 	{
             int tokenKind = TokenKind::ASSIGN;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -96,7 +117,7 @@ ASSIGN 	{
             return tokenKind;
         }
     
-COLON 	{
+{COLON} 	{
             int tokenKind = TokenKind::COLON;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -105,7 +126,7 @@ COLON 	{
             return tokenKind;
         }
     
-COMMA 	{
+{COMMA} 	{
             int tokenKind = TokenKind::COMMA;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -114,16 +135,16 @@ COMMA 	{
             return tokenKind;
         }
     
-CROSS 	{
-            int tokenKind = TokenKind::CROSS;
-            auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
-            auto tok = new Token(pos, tokenKind);
-            this->yylval->emplace<a_lang::Token *>(tok);
-            colNum++;
-            return tokenKind;
-        }
+{CROSS} {
+        int tokenKind = TokenKind::CROSS;
+        auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
+        auto tok = new Token(pos, tokenKind);
+        this->yylval->emplace<a_lang::Token *>(tok);
+        colNum++;
+        return tokenKind;
+}
     
-DASH 	{
+{DASH} 	{
             int tokenKind = TokenKind::DASH;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -132,16 +153,16 @@ DASH 	{
             return tokenKind;
         }
     
-EQUALS 	{
+{EQUALS} 	{
             int tokenKind = TokenKind::EQUALS;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
             this->yylval->emplace<a_lang::Token *>(tok);
-            colNum++;
+            colNum += 2;
             return tokenKind;
         }
     
-GREATER {
+{GREATER} {
             int tokenKind = TokenKind::GREATER;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -150,16 +171,16 @@ GREATER {
             return tokenKind;
         }
     
-GREATEREQ {
+{GREATEREQ} {
             int tokenKind = TokenKind::GREATEREQ;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
             this->yylval->emplace<a_lang::Token *>(tok);
-            colNum++;
+            colNum += 2;
             return tokenKind;
         }
     
-LCURLY 	{
+{LCURLY} 	{
             int tokenKind = TokenKind::LCURLY;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -168,7 +189,7 @@ LCURLY 	{
             return tokenKind;
         }
     
-LESS 	{
+{LESS} 	{
             int tokenKind = TokenKind::LESS;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -177,16 +198,16 @@ LESS 	{
             return tokenKind;
         }
     
-LESSEQ {
+{LESSEQ} {
             int tokenKind = TokenKind::LESSEQ;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
             this->yylval->emplace<a_lang::Token *>(tok);
-            colNum++;
+            colNum += 2;
             return tokenKind;
         }
     
-LPAREN {
+{LPAREN} {
             int tokenKind = TokenKind::LPAREN;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -195,7 +216,7 @@ LPAREN {
             return tokenKind;
         }
     
-NOT 	{
+{NOT} 	{
             int tokenKind = TokenKind::NOT;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -204,7 +225,7 @@ NOT 	{
             return tokenKind;
         }
     
-REF 	{
+{REF} 	{
             int tokenKind = TokenKind::REF;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -213,34 +234,34 @@ REF 	{
             return tokenKind;
         }
     
-NOTEQUALS {
+{NOTEQUALS} {
             int tokenKind = TokenKind::NOTEQUALS;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
             this->yylval->emplace<a_lang::Token *>(tok);
-            colNum++;
+            colNum += 2;
             return tokenKind;
         }
     
-POSTDEC {
+{POSTDEC} {
             int tokenKind = TokenKind::POSTDEC;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
             this->yylval->emplace<a_lang::Token *>(tok);
-            colNum++;
+            colNum += 2;
             return tokenKind;
         }
     
-POSTINC {
+{POSTINC} {
             int tokenKind = TokenKind::POSTINC;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
             this->yylval->emplace<a_lang::Token *>(tok);
-            colNum++;
+            colNum += 2;
             return tokenKind;
         }
     
-RCURLY 	{
+{RCURLY} 	{
             int tokenKind = TokenKind::RCURLY;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -249,7 +270,7 @@ RCURLY 	{
             return tokenKind;
         }
     
-RPAREN 	{
+{RPAREN} 	{
             int tokenKind = TokenKind::RPAREN;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -258,7 +279,7 @@ RPAREN 	{
             return tokenKind;
         }
     
-SEMICOL {
+{SEMICOL} {
             int tokenKind = TokenKind::SEMICOL;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -267,7 +288,7 @@ SEMICOL {
             return tokenKind;
         }
     
-SLASH 	{
+{SLASH} 	{
             int tokenKind = TokenKind::SLASH;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -276,7 +297,7 @@ SLASH 	{
             return tokenKind;
         }
     
-STAR 	{
+{STAR} 	{
             int tokenKind = TokenKind::STAR;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
@@ -285,17 +306,17 @@ STAR 	{
             return tokenKind;
         }
     
-ARROW {
+{ARROW}  {
             int tokenKind = TokenKind::ARROW;
             auto pos = new Position(lineNum, colNum, lineNum, colNum+1);
             auto tok = new Token(pos, tokenKind);
             this->yylval->emplace<a_lang::Token *>(tok);
-            colNum++;
+            colNum += 2;
             return tokenKind;
     }
 
 
-INTEGER	{
+{INTEGER} {
 		//TODO: The following computation of the integer
 		// value does not check for overflow. It should do so.
 		int intVal = atoi(yytext);

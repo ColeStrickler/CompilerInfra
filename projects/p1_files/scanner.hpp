@@ -4,11 +4,15 @@
 #if ! defined(yyFlexLexerOnce)
 #include <FlexLexer.h>
 #endif
-
+#include <unordered_set>
+#include <unordered_map>
 #include "frontend.hh"
 #include "errors.hpp"
 
 using TokenKind = a_lang::Parser::token;
+
+
+
 
 namespace a_lang {
 
@@ -19,6 +23,29 @@ public:
    {
 	lineNum = 1;
 	colNum = 1;
+
+   keywords = {
+   "and",
+   "bool",
+   "custom",
+   "else",
+   "eh?",
+   "false",
+   "fromconsole",
+   "if",
+   "immutable",
+   "int",
+   "or",
+   "otherwise",
+   "means",
+   "toconsole",
+   "return",
+   "true",
+   "void",
+   "while",
+   };
+
+
    };
    virtual ~Scanner() {
    };
@@ -64,10 +91,12 @@ public:
    }
 
    static std::string tokenKindString(int tokenKind);
+   static TokenKind::token_kind_type GetKeywordTokenKind(const std::string& keyword);
 
    void outputTokens(std::ostream& outstream);
-
+   bool isKeyword(const std::string& yytext) {return keywords.count(yytext) != 0;}
 private:
+   std::unordered_set<std::string> keywords;
    a_lang::Parser::semantic_type *yylval = nullptr;
    size_t lineNum;
    size_t colNum;

@@ -45,8 +45,7 @@ static void writeTokenStream(const char * inPath, const char * outPath){
 
 
 
-int
-main( const int argc, const char **argv )
+int main( const int argc, const char **argv )
 {
 	if (argc <= 1){ usageAndDie(); }
 	std::ifstream * input = new std::ifstream(argv[1]);
