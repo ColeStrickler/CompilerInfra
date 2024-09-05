@@ -41,6 +41,8 @@ void Scanner::outputTokens(std::ostream& outstream){
 			  << std::endl;
 			return;
 		} 
+		else if (tokenKind == TokenKind::YYEMPTY)
+			continue;
 		else {
 			outstream << lastMatch.as<Token *>()->toString()
 			  << std::endl;

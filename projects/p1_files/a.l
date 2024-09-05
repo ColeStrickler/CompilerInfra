@@ -318,7 +318,16 @@ ARROW ->
 
 {INTEGER} {
 		//TODO: The following computation of the integer
-		// value does not check for overflow. It should do so.
+		// value does not check for overflow. It should do so.ER
+
+		std::string text = std::string(yytext);
+		if (std::stoull(text) > 2147483648)
+		{
+			printf("FATAL [%d,%d-%d,%d]: Integer literal overflow.", lineNum,colNum,lineNum,colNum+strlen(yytext));
+			return TokenKind::YYEMPTY;
+		}
+
+
 		int intVal = atoi(yytext);
 
 

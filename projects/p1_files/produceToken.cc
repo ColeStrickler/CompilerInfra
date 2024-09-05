@@ -496,7 +496,7 @@ static const flex_int16_t yy_rule_linenum[31] =
     {   0,
        76,   97,  106,  107,  112,  121,  130,  139,  148,  157,
       166,  175,  184,  193,  202,  211,  220,  229,  238,  247,
-      256,  265,  274,  283,  292,  301,  310,  320,  343,  354
+      256,  265,  274,  283,  292,  301,  310,  320,  352,  363
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1136,7 +1136,16 @@ YY_RULE_SETUP
 #line 320 "a.l"
 {
 		//TODO: The following computation of the integer
-		// value does not check for overflow. It should do so.
+		// value does not check for overflow. It should do so.ER
+
+		std::string text = std::string(yytext);
+		if (std::stoull(text) > 2147483648)
+		{
+			printf("FATAL [%d,%d-%d,%d]: Integer literal overflow.", lineNum,colNum,lineNum,colNum+strlen(yytext));
+			return TokenKind::YYEMPTY;
+		}
+
+
 		int intVal = atoi(yytext);
 
 
@@ -1160,7 +1169,7 @@ YY_RULE_SETUP
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 343 "a.l"
+#line 352 "a.l"
 {
 		//Update the line number, reset the columnNumber
 		lineNum++;
@@ -1169,7 +1178,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 354 "a.l"
+#line 363 "a.l"
 {
 		//TODO: Add the rest of the rules above this point so that legal characters
 		// are properly accounted for. 
@@ -1183,10 +1192,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 364 "a.l"
+#line 373 "a.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1190 "produceToken.cc"
+#line 1199 "produceToken.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2304,6 +2313,6 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 364 "a.l"
+#line 373 "a.l"
 
 
