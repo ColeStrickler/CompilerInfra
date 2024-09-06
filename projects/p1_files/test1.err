@@ -1,0 +1,8 @@
+FATAL [9,1]-[9,17]: Integer literal overflow
+FATAL [11,15]-[11,29]: Integer literal overflow
+FATAL [11,30]-[11,44]: Integer literal overflow
+FATAL [14,1]-[14,9]: String literal with bad escape sequence detected
+FATAL [15,1]-[15,17]: Integer literal overflow
+FATAL [16,1]-[16,8]: Unterminated string literal detected
+FATAL [16,8]-[16,9]: Illegal character \
+FATAL [18,1]-[18,2]: Illegal character \

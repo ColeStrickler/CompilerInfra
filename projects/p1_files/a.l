@@ -1,6 +1,9 @@
 %{
 #include <string>
 #include <limits.h>
+#include <iostream>
+#include <algorithm> // For std::count
+#include <cstdlib>   // For std::exit
 
 /* Get our custom yyFlexScanner subclass */
 #include "scanner.hpp"
@@ -36,6 +39,9 @@ DIGIT [0-9]
 INTEGER [0-9]+
 IDENTIFIER [a-zA-Z_]([a-zA-Z0-9_])*
 STRING \"(\\[nt\\"\\]|[^"\\])*\"
+UNTERMSTRING \"(\\[nt\\"\\]|[^"\\])*[^\"\\]
+BADESCAPESTRLIT \"(\\[^nt\\"\\]|[^"\\])*\"
+BADESCAPESANDUTERM \"(\\[^nt\\"\\]|[^"\\])*[^\"\\]
 COMMENT \#.*
 WHITESPACE " "
 ASSIGN =
@@ -100,6 +106,47 @@ ARROW ->
 	this->yylval->emplace<a_lang::Token *>(tok);
 	colNum += strlen(yytext);
 	return tokenKind;
+}
+
+{UNTERMSTRING} {
+        
+        std::string text(yytext);
+        int lines = std::count(text.begin(), text.end(), '\n');
+        size_t rfind = text.rfind('\n');
+        int cols = rfind == std::string::npos ? text.size() : text.size() - rfind;
+        lineNum += lines;
+        
+        if (lines > 0)
+                colNum = 1;
+        auto pos = new Position(lineNum, colNum, lineNum, colNum+cols);
+        colNum += cols;
+
+        errStrUnterm(pos);
+        return TokenKind::YYEMPTY;
+}
+
+{BADESCAPESTRLIT} {
+        auto pos = new Position(lineNum, colNum, lineNum, colNum+strlen(yytext));
+        colNum += strlen(yytext);
+        errStrEsc(pos);
+        return TokenKind::YYEMPTY;
+}
+
+
+{BADESCAPESANDUTERM} {
+        std::string text(yytext);
+        int lines = std::count(text.begin(), text.end(), '\n');
+        size_t rfind = text.rfind('\n');
+        int cols = rfind == std::string::npos ? text.size() : text.size() - rfind;
+        lineNum += lines;
+        
+        if (lines > 0)
+                colNum = 1;
+        auto pos = new Position(lineNum, colNum, lineNum, colNum+cols);
+        colNum += cols;
+
+        errStrEscAndUnterm(pos);
+        return TokenKind::YYEMPTY;
 }
 
 {COMMENT} {}
@@ -319,11 +366,13 @@ ARROW ->
 {INTEGER} {
 		//TODO: The following computation of the integer
 		// value does not check for overflow. It should do so.ER
-
+                Position * pos = new Position(
+			lineNum, colNum, lineNum, colNum+strlen(yytext));
 		std::string text = std::string(yytext);
 		if (std::stoull(text) > 2147483648)
 		{
-			printf("FATAL [%d,%d-%d,%d]: Integer literal overflow.", lineNum,colNum,lineNum,colNum+strlen(yytext));
+                        colNum += strlen(yytext);
+			errIntOverflow(pos);
 			return TokenKind::YYEMPTY;
 		}
 
@@ -334,8 +383,7 @@ ARROW ->
 		//Note that the IntLitToken does not take a TokenKind argument
 		// since it's implicitly known that the token represents an
 		// INTLITERAL		
-		Position * pos = new Position(
-			lineNum, colNum, lineNum, colNum+strlen(yytext));
+		
 		Token * tok = new IntLitToken(pos, intVal);
 		yylval->emplace<a_lang::Token *>(tok);
 
