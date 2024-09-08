@@ -30,13 +30,14 @@ int main(int argc, char** argv)
     Parser* parser = new Parser(tokens);
     RootNode* rnode = parser->Parse();
 
-    printf("Parse successful\n");
+
 
     if (rnode == nullptr)
     {
         printf("Parser::Parse() unsuccessful.\n");
     }
     else {
+        printf("Parse successful\n");
         printf("Eval: %.3f\n", rnode->translate());
     }
 

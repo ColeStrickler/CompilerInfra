@@ -60,7 +60,6 @@ RootNode* Parser::Parse()
     auto expr = ParseExpr();
     if (expr == nullptr)
     {
-        printf("null expr\n");
         delete root;
         return nullptr;
     }
@@ -70,7 +69,6 @@ RootNode* Parser::Parse()
 
 Node* Parser::ParseExpr()
 {
-    printf("Parser::ParseExpr()\n");
     Node* root;
     Node* currExpr;
     auto term = ParseTerm();
@@ -88,6 +86,8 @@ Node* Parser::ParseExpr()
     {
         auto type = ConsumeToken()->GetType();
         auto expr = ParseTerm();
+        if (expr == nullptr)
+            return nullptr;
         currExpr->AddChild(Child(type == TOKENTYPE::CROSS ? 0 : 1, expr));
     }
     return root;
@@ -95,7 +95,6 @@ Node* Parser::ParseExpr()
 
 Node* Parser::ParseTerm()
 {
-    printf("Parser::ParseTerm()\n");
     Node* root;
     Node* currTerm;
     auto factor = ParseFactor();
@@ -113,6 +112,8 @@ Node* Parser::ParseTerm()
     {
         auto type = ConsumeToken()->GetType();
         auto term = ParseFactor();
+        if (term == nullptr)
+            return nullptr;
         currTerm->AddChild(Child(type == TOKENTYPE::STAR ? 0 : 1, term));
     }
     return root;
@@ -120,13 +121,18 @@ Node* Parser::ParseTerm()
 
 Node* Parser::ParseFactor()
 {
-    printf("Parser::ParseFactor()\n");
     Token* token = ConsumeToken();
+    if (token == nullptr)
+    {
+        ParseError("Parse error. Reached bottom of parse tree with no tokens left.\n");
+        return nullptr;
+    }
+
+
     TOKENTYPE type = token->GetType();
 
     if (type == TOKENTYPE::INT)
     {
-        printf("RawFactor()\n");
         auto rawFactor = new RawFactor(token->GetLexeme());
         return rawFactor;
     }
@@ -140,7 +146,6 @@ Node* Parser::ParseFactor()
             ParseError();
             return nullptr;
         }
-        printf("ParenFactor()\n");
         auto factor = new ParenFactor(expr);
         return factor;
     }
@@ -216,7 +221,6 @@ float RawExpr::translate()
             ret += child.node->translate();
         else
             ret -= child.node->translate();
-        printf("ret expr: %.3f\n", ret);
     }
     return ret;
 }
@@ -274,7 +278,6 @@ float RawTerm::translate()
             ret *= child.node->translate();
         else
             ret /= child.node->translate();
-        printf("ret term: %.3f\n", ret);
     }
     return ret;
 }
@@ -294,7 +297,6 @@ RawFactor::~RawFactor()
 
 float RawFactor::translate()
 {
-    printf("Raw factor value: %.2f\n", std::stof(m_Literal));
     return std::stof(m_Literal);
 }
 
