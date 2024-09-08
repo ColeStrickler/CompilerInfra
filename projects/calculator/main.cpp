@@ -1,13 +1,14 @@
 
 #include <fstream>
 #include <stdint.h>
+#include <sstream>
 #include "scanner.hpp"
 #include "parser.hpp"
 
-int main(int argc, char** argv)
+
+void interpret(std::istream* in)
 {
-    std::ifstream * infile = new std::ifstream(argv[1]);
-    Scanner::Scanner* scanner = new Scanner::Scanner(infile);
+    Scanner::Scanner* scanner = new Scanner::Scanner(in);
     bool scanning = true;
 
     while(scanning)
@@ -16,8 +17,11 @@ int main(int argc, char** argv)
         if (scan_err == TOKENTYPE::TOKEN_ERR)
         {
             auto last = scanner->GetLastToken();
-            std::cerr << last->toString();
-            exit(-1);
+            if (last == nullptr)
+                std::cerr << "Scanner error. no tokens\n";
+            else
+                std::cerr << last->toString() << "\n";
+            return;
         }
         if (scan_err == TOKENTYPE::TOKEN_EOF)
             scanning = false;
@@ -40,6 +44,25 @@ int main(int argc, char** argv)
         printf("Parse successful\n");
         printf("Eval: %.3f\n", rnode->translate());
     }
+    //delete parser;
+    //delete scanner;
+}
 
+
+
+int main(int argc, char** argv)
+{
+    std::stringstream is;
+    std::string line;
+    while(true)
+    {
+        std::cout << "\n>> ";
+        while(std::getline(std::cin, line) && !line.empty())
+        {
+            is << line;
+            interpret(&is);
+            is.clear();
+        }
+    }
 
 }

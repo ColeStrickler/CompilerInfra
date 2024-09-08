@@ -1,6 +1,8 @@
 #include "parser.hpp"
 
 
+std::vector<Node*> Parser::m_ActiveNodes;
+
 
 Parser::Parser() : m_Loc(0), m_CurrentToken(nullptr)
 {
@@ -9,6 +11,12 @@ Parser::Parser() : m_Loc(0), m_CurrentToken(nullptr)
 Parser::Parser(std::vector<Token*> tokens) : m_Tokens(tokens), m_Loc(0), m_CurrentToken(nullptr)
 {
     
+}
+
+Parser::~Parser()
+{
+    for (auto& node: m_ActiveNodes)
+        delete node;
 }
 
 Token* Parser::ConsumeToken()
@@ -63,7 +71,8 @@ RootNode* Parser::Parse()
         delete root;
         return nullptr;
     }
-    root->m_Children.push_back(Child(0, expr));
+    root->AddChild(Child(0, expr));
+    Parser::m_ActiveNodes.push_back(root); // save to delete later
     return root;
 }
 
@@ -344,10 +353,13 @@ float Node::translate()
 void Node::AddChild(Child child)
 {
     m_Children.push_back(child);
+    Parser::m_ActiveNodes.push_back(child.node); // save to delete later
 }
 
 void Node::AddChildren(Child child1, Child child2)
 {
     m_Children.push_back(child1);
     m_Children.push_back(child2);
+    Parser::m_ActiveNodes.push_back(child1.node); // save to delete later
+    Parser::m_ActiveNodes.push_back(child2.node); // save to delete later
 }

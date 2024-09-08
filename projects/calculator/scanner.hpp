@@ -79,6 +79,8 @@ public:
 	   m_Col = 1;
    };
    ~Scanner() {
+      for (auto& tok: m_Tokens)
+         delete tok;
    };
 
    //get rid of override virtual function warning

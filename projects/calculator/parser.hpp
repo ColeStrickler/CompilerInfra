@@ -14,6 +14,7 @@ public:
     std::vector<Child> m_Children;
     void AddChild(Child child);
     void AddChildren(Child child1, Child child2);
+    void Delete();
 };
 
 struct Child
@@ -118,6 +119,9 @@ public:
     Parser(std::vector<Token*> tokens);
     ~Parser();
     RootNode* Parse();
+
+
+    static std::vector<Node*> m_ActiveNodes;
 private:
     Node* ParseExpr();
     Node* ParseTerm();
@@ -129,9 +133,7 @@ private:
     void ParseError();
     void ParseError(const std::string& msg);
 
-    Token* m_CurrentToken;
-
-
+    Token* m_CurrentToken; 
     std::vector<Token*> m_Tokens;
     int m_Loc;
     RootNode* m_CurrentTree;
