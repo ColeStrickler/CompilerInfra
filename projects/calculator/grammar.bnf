@@ -1,0 +1,4 @@
+<root> ::= <expr>
+<expr> ::= <term> (CROSS <term>)* | <term> DASH <term> | <term>
+<term> ::= <term> STAR <factor> | <term> SLASH <factor> | <factor>
+<factor> ::= INT | LPAREN <expr> RPAREN
