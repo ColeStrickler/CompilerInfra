@@ -69,3 +69,4 @@ char RegexScanner::ConsumeChar()
 
     return m_Regex[m_CurrIndex++];
 }
+
