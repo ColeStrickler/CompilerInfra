@@ -11,7 +11,7 @@ public:
     ~RegExprNode();
 protected:
     virtual void Print() = 0;
-
+    std::vector<RegExprNode*> m_Children;
 };
 
 class OrExpr : public RegExprNode {
