@@ -1,0 +1,9 @@
+Regex ::= OrExpr CONCAT Regex | OrExpr
+OrExpr ::= StarExpr OR OrExpr | StarExpr
+StarExpr ::= InterMedExpr STAR | InterMedExpr QUESTION_MARK | InterMedExpr PLUS
+InterMedExpr ::= BracketExpr | ParenExpr | CharExpr
+BracketExpr ::= LBRACKET CARROT DashExpr RBRACKET | LBRACKET DashExpr RBRACKET
+DashExpr ::= CHARACTER DASH CHARACTER DashExpr | CHARACTER | EPSILON
+ParenExpr ::= LPAREN Regex RPAREN
+CharExpr ::= CharLitExpr CONCAT CharExpr | CharLitExpr
+CharLitExpr ::= DOT | 0x0 | 0x1 | ..... | 0xff

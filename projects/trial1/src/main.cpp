@@ -1,5 +1,5 @@
 #include "input.h"
-
+#include "scanner.hpp"
 
 
 
@@ -22,13 +22,24 @@ int main(int argc, char** argv)
     auto spec = input.GetRegexes();
 
 
+
+    ;
     for (auto& s: spec)
     {
-        std::cout << s.first << " " << s.second << "\n";
+        std::cout << s.first << "," << s.second << "\n";
+        RegexScanner reScanner(s.first);
+        if (!reScanner.ScanRegex())
+        {
+            std::cout << reScanner.GetErrorString() << "\n";
+            return -1;
+        }
+        auto tokens = reScanner.GetTokens();
+        for (auto& tok: tokens)
+        {
+            std::cout << tok.toString() << "\n";
+        }
+        std::cout << "\n\n";
     }
-
-
-
 
 
 };

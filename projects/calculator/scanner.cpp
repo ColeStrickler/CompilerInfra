@@ -27,6 +27,20 @@ Token::Token(TOKENTYPE type, Position pos, const std::string& text) : m_Type(typ
 {
 }
 
+Token::Token(TokenType type, std::string text)
+{
+
+}
+
+Token::Token(TokenType type, const std::string &text) : m_Type(type), m_Lexeme(text)
+{
+}
+
+Token::Token(TokenType type) : m_Type(type)
+{
+
+}
+
 Token::~Token()
 {
 }
