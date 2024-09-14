@@ -4,6 +4,12 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+
+
+
+/*
+
+*/
 enum TokenType
 {
     CHARACTER,
@@ -43,6 +49,7 @@ static const char* TokenTypeStrings[] =
 
 enum ERROR
 {
+    NO_ERROR,
     CONSUME_AT_END,
     INVALID_ESCAPE,
 };
@@ -74,8 +81,11 @@ class RegexScanner
 {
 public:
     RegexScanner(const std::string& regex);
+    RegexScanner();
     ~RegexScanner();
 
+    void AddRegExString(const std::string& regex);
+    void ScannerReset();
     std::string GetErrorString();
     std::vector<Token> GetTokens();
     bool ScanRegex();

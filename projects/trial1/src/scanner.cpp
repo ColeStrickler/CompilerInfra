@@ -4,13 +4,31 @@ RegexScanner::RegexScanner(const std::string &regex) : m_Regex(regex), m_CurrInd
 {
 }
 
+RegexScanner::RegexScanner() : m_CurrIndex(0), m_PrevCharacter(0x0)
+{
+    
+}
+
 RegexScanner::~RegexScanner()
 {
+}
+
+void RegexScanner::AddRegExString(const std::string &regex)
+{
+    m_Regex = regex;
 }
 
 std::string RegexScanner::GetErrorString()
 {
     return std::string(ScannerErrorStrings[m_ErrorCode]);
+}
+
+void RegexScanner::ScannerReset()
+{
+    m_CurrIndex = 0;
+    m_PrevCharacter = 0x0;
+    m_Regex.clear();
+    m_ErrorCode = ERROR::NO_ERROR;
 }
 
 std::vector<Token> RegexScanner::GetTokens()
