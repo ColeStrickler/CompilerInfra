@@ -28,7 +28,7 @@ void RegexScanner::ScannerReset()
     m_CurrIndex = 0;
     m_PrevCharacter = 0x0;
     m_Regex.clear();
-    m_ErrorCode = ERROR::NO_ERROR;
+    m_ErrorCode = ERRORCODE::NO_ERROR;
 }
 
 std::vector<Token> RegexScanner::GetTokens()
@@ -56,7 +56,7 @@ bool RegexScanner::ScanRegex()
                     case '"': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, "\"")); break;
                     default:
                     {
-                        m_ErrorCode = ERROR::INVALID_ESCAPE;
+                        m_ErrorCode = ERRORCODE::INVALID_ESCAPE;
                         return false;
                     }
                 }
@@ -119,7 +119,7 @@ char RegexScanner::ConsumeChar()
 {
     if (AtEnd())
     {
-        m_ErrorCode = ERROR::CONSUME_AT_END;
+        m_ErrorCode = ERRORCODE::CONSUME_AT_END;
         return 0x0;
     }
 

@@ -1,6 +1,7 @@
 #include "input.h"
 #include "regex_compiler.h"
 #include "automata.h"
+#include "outfile_writer.h"
 
 int main(int argc, char** argv)
 {
@@ -21,25 +22,23 @@ int main(int argc, char** argv)
 
 
 
-    
+    std::vector<std::pair<NFA*, TokenActionItem>> outVector;
     for (auto& s: spec)
     {
-        std::cout << s.first << "," << s.second << "\n";
+        //std::cout << s.first << "," << s.second << "\n";
         RegexCompiler reCompiler;
+        
         NFA* regEx = reCompiler.CompileRegEx(s.first);
-        if(regEx == nullptr)
-            std::cout << reCompiler.GetErrorString();
-        else
-            printf("Compilation successful!\n");
 
+        //std::cout << "Successfully matched: " << s.first << "\n";
+        std::pair<NFA*, TokenActionItem> outItem = {regEx, s.second};
+        outVector.push_back(outItem);
 
-
-        if (regEx->Accept("18541012412487098777"))
-            printf("Test1 Accept!\n");
-
-        if (regEx->Accept("1289aasa"))
-            printf("Test2 Accept!\n");
     }
     
+    OutfileWriter fileWriter("./dragonlex.hpp", outVector);
+    
+
+    fileWriter.WriteScannerClassFile();
 
 };

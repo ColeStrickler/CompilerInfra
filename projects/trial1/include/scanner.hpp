@@ -47,7 +47,7 @@ static const char* TokenTypeStrings[] =
 
 
 
-enum ERROR
+enum ERRORCODE
 {
     NO_ERROR,
     CONSUME_AT_END,
@@ -100,7 +100,7 @@ private:
     char m_PrevCharacter;
     std::string m_Regex;
     std::vector<Token> m_Tokens;
-    ERROR m_ErrorCode;
+    ERRORCODE m_ErrorCode;
 };
 
 

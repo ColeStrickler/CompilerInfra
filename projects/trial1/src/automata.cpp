@@ -11,13 +11,11 @@ NFA::NFA(uint16_t c)
 
 NFA::NFA(uint16_t rangeStart, uint16_t rangeEnd)
 {
-    printf("NFA::RangeConstructor\n");
     m_StartState.insert(0);
     m_AcceptStates.insert(1);
     uint16_t beg = std::min(rangeStart, rangeEnd);
     uint16_t end = std::max(rangeStart, rangeEnd);
 
-    printf("beg: %d, end: %d\n", beg, end);
 
     for (uint16_t i = beg; i <= end; i++)
     {
@@ -25,7 +23,6 @@ NFA::NFA(uint16_t rangeStart, uint16_t rangeEnd)
         m_Transitions[0][i].insert(1);
     }
 
-    printf("Constructed ranged NFA\n");
     m_TotalStates = 2;
 }
 
@@ -68,7 +65,7 @@ void NFA::PlusConstructor(NFA* nfa)
         m_Transitions[accept][EPSILON].insert(nfa->m_StartState.begin(), nfa->m_StartState.end()); // this the * 1 or more times
     }
 
-    printf("Constructed + NFA\n");
+
     m_TotalStates += 1;
 }
 
@@ -365,3 +362,47 @@ void NFA::ConsumeTransitionTable(const std::unordered_map<int, std::unordered_ma
         }
     }
 }
+
+
+/*
+    This function will dump to a simple NFA struct
+*/
+std::string NFA::DumpTables()
+{
+    std::string ret = "NFASimple{\n.m_Transitions = {";
+    for (auto& e: m_Transitions)
+    {
+        ret += "{" + std::to_string(e.first) + "," + "{";
+        for (auto t: e.second)
+        {
+            ret += "{" + std::to_string(t.first) + ", {";
+            for (auto& state: t.second)
+                ret += std::to_string(state) + ",";
+            ret += "}},";
+        }
+        ret += "}},";
+    }
+    ret += "},\n";
+
+
+    ret += ".m_AcceptStates = {";
+    for (auto& state: m_AcceptStates)
+    {
+        ret += std::to_string(state) + ",";
+    }
+    ret += "},\n";
+
+    ret += ".m_StartState = {";
+    for (auto& state : m_StartState)
+    {
+        ret += std::to_string(state) + ",";
+    }
+    ret += "},\n";
+
+    ret += ".m_CurrentStates = {},\n";
+    ret += ".m_PrevHadAcceptState = false\n";
+    ret += "},";
+
+    return ret;
+}
+

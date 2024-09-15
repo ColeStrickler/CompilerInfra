@@ -3,7 +3,13 @@ OrExpr ::= StarExpr OR OrExpr | StarExpr
 StarExpr ::= IntermedExpr STAR | IntermedExpr QUESTION_MARK | IntermedExpr PLUS | IntermedExpr
 IntermedExpr ::= BracketExpr | ParenExpr | CharExpr
 BracketExpr ::= LBRACKET CARROT DashExpr RBRACKET | LBRACKET DashExpr RBRACKET
-DashExpr ::= CharLitExpr DASH CharLitExpr DashExpr | CharExpr | EPSILON
+DashExpr ::= CharLitExpr DASH CharLitExpr DashExpr | CharLitExpr CharExpr | CharLitExpr | EPSILON
 ParenExpr ::= LPAREN Regex RPAREN
 CharExpr ::= CharLitExpr CONCAT CharExpr | CharLitExpr
 CharLitExpr ::= DOT | 0x0 | 0x1 | ..... | 0xff
+
+
+
+NOUN [1,1]
+      VERB [1,7]
+      NOUN:dog [1,13]

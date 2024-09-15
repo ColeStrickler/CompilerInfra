@@ -28,17 +28,14 @@ NFA *RegexCompiler::CompileRegEx(const std::string &regex)
         m_Error = REGEX_COMPILER_ERROR::SCANNER_ERROR;
         return nullptr;
     }
-    for (int i = 0; i < tokens.size(); i++)
-        printf("[%d]: %s\n", i, tokens[i].toString().c_str());
-
+   // printf("tokenized\n");
     auto parseTree = ParseRegEx(tokens);
+    //printf("parsed\n");
     if (parseTree == nullptr)
     {
         m_Error = REGEX_COMPILER_ERROR::PARSER_ERROR;
         return nullptr;
     }
-
-    printf("Parse successful!\n");
 
     return parseTree->Translate();
     /*

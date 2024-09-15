@@ -34,8 +34,17 @@ build:
 run: dev
 	./$(BUILD_DIR)/$(TARGET_FILE) ./spec.l
 
-test:
+
+dragonlex.hpp : run
+	
+
+dragonlex: dragonlex.hpp test_harness.cpp
+	g++ -std=c++17 -o dragonlextest test_harness.cpp -I./
+
+test:  dragonlex
+	chmod +x dragonlextest
+	./dragonlextest input.test
 
 
 clean:
-	rm -rf ./build/*
+	rm -rf ./build/* ./dragonlextest ./dragonlex.hpp

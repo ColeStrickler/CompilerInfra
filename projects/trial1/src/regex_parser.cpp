@@ -4,7 +4,7 @@ ChildNode::ChildNode(uint16_t type, RegExprNode *node)  : m_Type(type), m_Node(n
 {
 }
 
-RegExprNode::RegExprNode()
+RegExprNode::RegExprNode() : m_DebugMode(false)
 {
 }
 
@@ -18,7 +18,7 @@ void RegExprNode::Print()
 
 NFA *RegExprNode::Translate()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     if (m_Children.size() >= 1)
     {
             NFA* baseNFA = m_Children[0].m_Node->Translate();
@@ -44,7 +44,7 @@ void RegExprNode::AddChild(const ChildNode& node)
     m_Children.push_back(node);
 }
 
-OrExpr::OrExpr()
+OrExpr::OrExpr() : RegExprNode()
 {
 }
 
@@ -54,7 +54,7 @@ OrExpr::~OrExpr()
 
 NFA *OrExpr::Translate()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     if (m_Children.size() >= 1)
     {
             NFA* baseNFA = m_Children[0].m_Node->Translate();
@@ -78,7 +78,7 @@ void OrExpr::Print()
 {
 }
 
-StarExpr::StarExpr()
+StarExpr::StarExpr() : RegExprNode()
 {
 }
 
@@ -88,7 +88,7 @@ StarExpr::~StarExpr()
 
 NFA *StarExpr::Translate()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     if (m_Children.size() == 1)
     {
         auto expr = m_Children[0].m_Node;
@@ -121,7 +121,7 @@ void StarExpr::Print()
 {
 }
 
-InterMedExpr::InterMedExpr()
+InterMedExpr::InterMedExpr() : RegExprNode()
 {
 }
 
@@ -131,7 +131,7 @@ InterMedExpr::~InterMedExpr()
 
 NFA *InterMedExpr::Translate()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     if (m_Children.size() == 1)
     {
         return m_Children[0].m_Node->Translate();
@@ -146,7 +146,7 @@ void InterMedExpr::Print()
 
 }
 
-DashExpr::DashExpr()
+DashExpr::DashExpr() : RegExprNode()
 {
 }
 
@@ -157,20 +157,26 @@ DashExpr::~DashExpr()
 
 NFA *DashExpr::Translate()
 {
-    PRINT_CALL;
+    PRINT_CALL();
+
     int numChildren = m_Children.size();
     if (numChildren == 0)
     {
-        std::cout << "DashExpr --> no children\n";
         return nullptr;
     }
-
     if (numChildren == 1)
     {
-        std::cout << "DashExpr --> 1child n\n";
-        CharExpr* cExpr = (CharExpr*)m_Children[0].m_Node;
+        return m_Children[0].m_Node->Translate();
+    }
+
+    if (numChildren == 2)
+    {
+        auto clitExpr = m_Children[0].m_Node;
+        CharExpr* cExpr = (CharExpr*)m_Children[1].m_Node;
+
+        NFA* cLitNFA = clitExpr->Translate();
         NFA* cExprNFA = cExpr->TranslateBracket(); // apply the special transformation for inside the bracket context
-        return cExprNFA;
+        return new NFA(cLitNFA, cExprNFA, NFA_OP::NFA_OR);
     }
 
     if (numChildren == 3)
@@ -181,7 +187,6 @@ NFA *DashExpr::Translate()
 
         uint16_t litExpr1 = cLit1->GetChar();
         uint16_t litExpr2 = cLit2->GetChar();
-        printf("3 children! litExpr1 : %d, litExpr2 %d\n", litExpr1, litExpr2);
         NFA* rangeNFA = new NFA(litExpr1, litExpr2);
         
         NFA* dashExprNFA = m_Children[2].m_Node->Translate();
@@ -200,7 +205,7 @@ void DashExpr::Print()
 {
 }
 
-ParenExpr::ParenExpr()
+ParenExpr::ParenExpr() : RegExprNode()
 {
 }
 
@@ -210,7 +215,7 @@ ParenExpr::~ParenExpr()
 
 NFA *ParenExpr::Translate()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     if (m_Children.size() == 1)
     {
         NFA* nfa = m_Children[0].m_Node->Translate();
@@ -223,7 +228,7 @@ void ParenExpr::Print()
 {
 }
 
-CharExpr::CharExpr()
+CharExpr::CharExpr() : RegExprNode()
 {
 }
 
@@ -233,7 +238,7 @@ CharExpr::~CharExpr()
 
 NFA *CharExpr::Translate()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     if (m_Children.size() >= 1)
     {
         NFA* start = m_Children[0].m_Node->Translate();
@@ -254,9 +259,10 @@ NFA *CharExpr::Translate()
 
 NFA *CharExpr::TranslateBracket()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     if (m_Children.size() >= 1)
     {
+        //
         NFA* start = m_Children[0].m_Node->Translate();
         NFA* curr = start;
         
@@ -277,7 +283,7 @@ void CharExpr::Print()
 {
 }
 
-CharLitExpr::CharLitExpr()
+CharLitExpr::CharLitExpr() : RegExprNode()
 {
     
 }
@@ -299,7 +305,6 @@ uint16_t CharLitExpr::GetChar()
 
 NFA *CharLitExpr::Translate()
 {
-    PRINT_CALL;
     // should only be one child
     if (m_Children.size() == 1)
     {
@@ -350,12 +355,11 @@ RegExprNode *RegexParser::Parse()
 
 RegExprNode *RegexParser::ParseRegEx()
 {   
-    PRINT_CALL;
+    PRINT_CALL();
     auto rNode = NEW_NODE(RegExprNode);
     RegExprNode* orNode = ParseOrExpr();
     if (orNode == nullptr) // got an error
     {
-        printf("missed ParseRegEx orNode\n");
         return orNode;
     }
 
@@ -366,18 +370,15 @@ RegExprNode *RegexParser::ParseRegEx()
     
     while(tokenType == TokenType::CONCAT)
     {
-        printf("type: %d\n", tokenType);
         ConsumeToken();
         RegExprNode* reNode = ParseRegEx();
         if (reNode == nullptr)
         {
-            printf("missed ParseRegEx() reNode\n");
             return nullptr;
         }
         rNode->AddChild(ChildNode(1, reNode));
         
         tokenType = PeekToken();
-        //printf("type: %d\n", tokenType);
     }
 
 
@@ -386,7 +387,7 @@ RegExprNode *RegexParser::ParseRegEx()
 
 RegExprNode *RegexParser::ParseOrExpr()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     auto orNode = NEW_NODE(OrExpr);
     RegExprNode* starNode = ParseStarExpr();
     if (starNode == nullptr)
@@ -410,7 +411,7 @@ RegExprNode *RegexParser::ParseOrExpr()
 
 RegExprNode *RegexParser::ParseStarExpr()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     auto starNode = NEW_NODE(StarExpr);
     RegExprNode* interMedNode = ParseIntermedExpr();
     if (interMedNode == nullptr)
@@ -419,7 +420,6 @@ RegExprNode *RegexParser::ParseStarExpr()
     
     auto tokenType = PeekToken();
 
-    printf("tokenType %d\n", tokenType);
     if (tokenType == TokenType::STAR)
     {
         ConsumeToken();
@@ -434,7 +434,6 @@ RegExprNode *RegexParser::ParseStarExpr()
     {
         ConsumeToken();
         starNode->AddChild(ChildNode(3, interMedNode)); // plus operator
-        printf("consume +\n");
     }
     else
         starNode->AddChild(ChildNode(0, interMedNode)); // no operator
@@ -446,7 +445,7 @@ RegExprNode *RegexParser::ParseStarExpr()
 
 RegExprNode *RegexParser::ParseIntermedExpr()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     auto intermedNode = NEW_NODE(InterMedExpr);
     auto nextType = PeekToken();
 
@@ -469,7 +468,6 @@ RegExprNode *RegexParser::ParseIntermedExpr()
             RegExprNode* parenExpr = ParseParenExpr();
             if (parenExpr == nullptr)
                 return nullptr;
-            printf("ParseIntermedExpr() --> hit ParenExpr()!\n");
             intermedNode->AddChild(ChildNode(1, parenExpr));
             break;
         }
@@ -478,16 +476,23 @@ RegExprNode *RegexParser::ParseIntermedExpr()
             RegExprNode* charExpr = ParseCharExpr();
             if (charExpr == nullptr)
             {
-                printf("ParseIntermedExpr() --> missed CharExpr()\n");
                 return nullptr;
             }
-            printf("ParseIntermedExpr() --> hit CharExpr()!\n");
+            intermedNode->AddChild(ChildNode(2, charExpr));
+            break;
+        }
+        case TokenType::DOT:
+        {
+            RegExprNode* charExpr = ParseCharExpr();
+            if (charExpr == nullptr)
+            {
+                return nullptr;
+            }
             intermedNode->AddChild(ChildNode(2, charExpr));
             break;
         }
         default:
         {
-            printf("Missed IntermediateExpr --> Token Was: %d\n", nextType);
             /*
                 If we get here, none of the tokens matched the grammar, and none were consumed.
                 So, to get error reporting on the proper token we consume the one that we errored on
@@ -503,7 +508,7 @@ RegExprNode *RegexParser::ParseIntermedExpr()
 
 RegExprNode *RegexParser::ParseBracketExpr()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     auto bracketNode = NEW_NODE(BracketExpr);
     auto token = ConsumeToken();
     if (token->m_Type != TokenType::BRACKET_LEFT)
@@ -520,7 +525,6 @@ RegExprNode *RegexParser::ParseBracketExpr()
     token = ConsumeToken();
     if (token->m_Type != TokenType::BRACKET_RIGHT)
         return nullptr;
-    printf("consume rBracket\n");
     return bracketNode;
 }
 
@@ -528,59 +532,58 @@ RegExprNode *RegexParser::ParseBracketExpr()
 
 RegExprNode *RegexParser::ParseDashExpr()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     auto dashNode = NEW_NODE(DashExpr);
     RegExprNode* cExpr1 = ParseCharLitExpr();
     if (cExpr1 == nullptr)
     {
-        printf("Got Epsilon for DashExpr\n");
         return dashNode; // DashExpr ::= EPSILON
     }
 
-    dashNode->AddChild(ChildNode(0, cExpr1));
-    
     auto tokenType = PeekToken();
-    if (tokenType == TokenType::DASH)
+    dashNode->AddChild(ChildNode(tokenType == TokenType::DASH, cExpr1));
+    
+    
+    if (tokenType == TokenType::DASH) // we force dashes to be at the beginning of BracketExpr
     {
         ConsumeToken();
-        printf("parse dash\n");
         RegExprNode* cExpr2 = ParseCharLitExpr();
         if (cExpr2 == nullptr) // can not match nullptr here because we consumed DASH
             return nullptr;
-        dashNode->AddChild(ChildNode(0, cExpr2));
+        dashNode->AddChild(ChildNode(1, cExpr2));
+        auto childDashNode = ParseDashExpr();
+        if (childDashNode != nullptr) // should only receive nullptr on parsing failure
+            dashNode->AddChild(ChildNode(2, childDashNode));
     }
     else
     {
+        RegExprNode* cExpr2 = ParseCharExpr();
+        if (cExpr2 != nullptr)
+            dashNode->AddChild(ChildNode(0, cExpr2));
         return dashNode; // DashExpr ::= CharExpr
     }
 
-
-    auto childDashNode = ParseDashExpr();
-    if (childDashNode != nullptr) // should only receive nullptr on parsing failure
-        dashNode->AddChild(ChildNode(1, childDashNode));
     return dashNode;
 }
 
 RegExprNode *RegexParser::ParseParenExpr()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     auto parenNode = NEW_NODE(ParenExpr);
     auto token = ConsumeToken();
     if (token->m_Type != TokenType::PARENTHESES_LEFT)
         return nullptr;
     RegExprNode* regExpr = ParseRegEx();
-    printf("ParseParenExpr() --> got regExpr!\n");
     if (regExpr == nullptr)
         return nullptr;
 
     parenNode->AddChild(ChildNode(0, regExpr));
-    if (AtEnd())
-        printf("AtEnd()\n");
-
     token = ConsumeToken();
+    if (token == nullptr)
+        return nullptr;
+
     if (token->m_Type != TokenType::PARENTHESES_RIGHT)
         return nullptr;
-    printf("retuning ParenNode\n");
     return parenNode;
 }
 
@@ -588,47 +591,46 @@ RegExprNode *RegexParser::ParseParenExpr()
 
 RegExprNode *RegexParser::ParseCharExpr()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     auto charNode = NEW_NODE(CharExpr);
     RegExprNode* charLitExpr = ParseCharLitExpr();
     if (charLitExpr == nullptr)
+    {
         return nullptr;
+    }
     charNode->AddChild(ChildNode(0, charLitExpr));
     auto tokenType = PeekToken();
 
     while(tokenType == TokenType::CONCAT && PeekNextToken() == TokenType::CHARACTER && !AtEnd())
     {
         ConsumeToken();
-        printf("consumed %s\n", m_CurrentToken->toString().c_str());
         RegExprNode* charLitExpr2 = ParseCharLitExpr();
         if (charLitExpr2 == nullptr)
             return nullptr;
         charNode->AddChild(ChildNode(0, charLitExpr2));
         auto tokenType = PeekToken();
     }
-    printf("returning charNode\n");
     return charNode;
 }
 
 RegExprNode *RegexParser::ParseCharLitExpr()
 {
-    PRINT_CALL;
+    PRINT_CALL();
     auto charLitNode = NEW_NODE(CharLitExpr);
 
     auto tokenType = PeekToken();
 
 
-    if (tokenType != TokenType::CHARACTER)
+    if (tokenType != TokenType::CHARACTER && tokenType != TokenType::DOT)
     {
-        printf("missed charLitExpr\n");
         return nullptr;
     }
 
     auto token = ConsumeToken();
-    printf("consumed %s\n", m_CurrentToken->m_Lexeme.c_str());
 
     char c = token->m_Lexeme[0];
-    if (c == '.')
+    auto type = token->m_Type;
+    if (type == TokenType::DOT)
     {
         /*
             we let INT32_MAX be the any character match.
@@ -640,7 +642,6 @@ RegExprNode *RegexParser::ParseCharLitExpr()
     {
         // if character is not '.' we just add the raw ascii code
         charLitNode->AddChild(ChildNode(c, nullptr));
-        printf("CharLitNode type: %c\n", charLitNode->m_Children[0].m_Type);
     }
     return charLitNode;
 }

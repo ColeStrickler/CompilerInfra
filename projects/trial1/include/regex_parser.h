@@ -7,7 +7,14 @@
 
 #define TOKEN_INVALID ((TokenType)-1)
 #define NEW_NODE(type) ((type*)(AddPointer(new type())))
-#define PRINT_CALL (std::cout << "CALL: " << std::string(typeid(*this).name()) << "::" << __func__ << std::endl)
+// Correct macro definition
+#define PRINT_CALL() \
+    do { \
+        if (m_DebugMode) { \
+            std::cout << "CALL: " << typeid(*this).name() << "::" << __func__ << std::endl; \
+        } \
+    } while (0)
+
 
 enum REGEX_COMPILER_ERROR
 {
@@ -25,6 +32,7 @@ public:
 
     uint16_t m_Type;
     RegExprNode* m_Node;
+    
 };
 
 
@@ -36,6 +44,7 @@ public:
     virtual NFA* Translate();
     void AddChild(const ChildNode& node);
     std::vector<ChildNode> m_Children;
+    bool m_DebugMode;
 protected:
     
 };
