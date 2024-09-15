@@ -1,8 +1,6 @@
 #include "calc.hpp"
 #include <cassert>
 
-
-
 int EECS::Manager::m_NodeCount = 0;
 
 void EECS::Manager::parse( const char * filepath){
@@ -11,7 +9,7 @@ void EECS::Manager::parse( const char * filepath){
 	this->scanner = new EECS::Scanner(&in_stream);
 	this->parser = new EECS::Parser(*scanner, *this);
 
-	std::cout << "Gettin' ready to parse\n";
+	//std::cout << "Gettin' ready to parse\n";
 	parser->parse();
 	return;
 }
