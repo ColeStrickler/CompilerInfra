@@ -1,0 +1,11 @@
+digraph dfa{
+        node4 [shape=record label="+"]
+        node2 [shape=record label="+"]
+        node0 [shape=record label="1"]
+        node2 -> node0 [label="arm1"]
+        node1 [shape=record label="2"]
+        node2 -> node1 [label="arm2"]
+        node4 -> node2 [label="arm1"]
+        node3 [shape=record label="3"]
+        node4 -> node3 [label="arm2"]
+}

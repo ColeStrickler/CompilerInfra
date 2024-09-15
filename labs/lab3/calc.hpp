@@ -9,6 +9,8 @@ namespace EECS{
 class Manager {
 public:
 	void parse(const char * filepath);
+	static void IncNodeCount() { m_NodeCount++;}
+	static int GetNodeCount() {return m_NodeCount;}
 	static int m_NodeCount;
 private:
 	
