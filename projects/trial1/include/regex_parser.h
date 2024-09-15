@@ -89,6 +89,7 @@ public:
     ~DashExpr();
     NFA* Translate() override;
     void Print() override;
+    std::unordered_set<uint16_t> m_CharactersUsed;
 };
 
 
@@ -107,6 +108,7 @@ public:
     NFA* Translate() override;
     NFA* TranslateBracket();
     void Print() override;
+    std::unordered_set<uint16_t> m_CharactersUsed;
 };
 
 class CharLitExpr : public RegExprNode {

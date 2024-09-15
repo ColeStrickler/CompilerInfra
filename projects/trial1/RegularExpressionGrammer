@@ -7,9 +7,3 @@ DashExpr ::= CharLitExpr DASH CharLitExpr DashExpr | CharLitExpr CharExpr | Char
 ParenExpr ::= LPAREN Regex RPAREN
 CharExpr ::= CharLitExpr CONCAT CharExpr | CharLitExpr
 CharLitExpr ::= DOT | 0x0 | 0x1 | ..... | 0xff
-
-
-
-NOUN [1,1]
-      VERB [1,7]
-      NOUN:dog [1,13]

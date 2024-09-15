@@ -2,6 +2,7 @@
 
 OutfileWriter::OutfileWriter(const std::string &outFileName, const std::vector<std::pair<NFA *, TokenActionItem>> regex_actions) : m_File(outFileName), m_RegExActions(regex_actions)
 {
+    WriteScannerClassFile();
 }
 
 void OutfileWriter::WriteScannerClassFile()

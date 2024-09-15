@@ -25,20 +25,23 @@ int main(int argc, char** argv)
     std::vector<std::pair<NFA*, TokenActionItem>> outVector;
     for (auto& s: spec)
     {
-        //std::cout << s.first << "," << s.second << "\n";
+        //std::cout << s.first << "\n";
         RegexCompiler reCompiler;
         
         NFA* regEx = reCompiler.CompileRegEx(s.first);
-
-        //std::cout << "Successfully matched: " << s.first << "\n";
+        if (regEx == nullptr)
+        {
+            std::cout << reCompiler.GetErrorString();
+            return -1;
+        }
         std::pair<NFA*, TokenActionItem> outItem = {regEx, s.second};
         outVector.push_back(outItem);
 
     }
     
     OutfileWriter fileWriter("./dragonlex.hpp", outVector);
+   
+
+    //fileWriter.WriteScannerClassFile();
     
-
-    fileWriter.WriteScannerClassFile();
-
 };

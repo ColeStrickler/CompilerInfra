@@ -34,6 +34,8 @@ build:
 run: dev
 	./$(BUILD_DIR)/$(TARGET_FILE) ./spec.l
 
+loc:
+	python3 ./lines_of_code.py .
 
 dragonlex.hpp : run
 	

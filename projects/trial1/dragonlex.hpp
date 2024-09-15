@@ -273,9 +273,9 @@ public:
                 
                 int winner = newActives[0];
                 auto winNFA = m_NFAs[winner];
-                if (!winNFA.m_PrevHadAcceptState)
+                if (!winNFA.inAcceptState())
                     continue;
-                //printf("newActives.size() == 1 %c\n", c);
+               // printf("newActives.size() == 1 %c\n", c);
                 return CreateToken(winner, colStart, lineStart, rawStart);
             }
             active = newActives;
@@ -348,13 +348,6 @@ NFASimple{
 .m_PrevHadAcceptState = false
 },
 NFASimple{
-.m_Transitions = {{5,{{65535, {6,}},}},{6,{{103, {7,}},}},{1,{{65535, {2,}},}},{2,{{119, {3,}},}},{0,{{115, {1,}},}},{4,{{97, {5,}},}},{3,{{65535, {4,}},}},},
-.m_AcceptStates = {7,},
-.m_StartState = {0,},
-.m_CurrentStates = {},
-.m_PrevHadAcceptState = false
-},
-NFASimple{
 .m_Transitions = {{0,{{65534, {1,}},}},},
 .m_AcceptStates = {1,},
 .m_StartState = {0,},
@@ -394,14 +387,6 @@ TokenActionItem{
 .m_MetaData = "",
 
 .m_Type = TokenType::SKIP,
-
-},
-TokenActionItem{
-.m_Action = (INPUTACTION)2,
-
-.m_MetaData = "swaggin on em!",
-
-.m_Type = TokenType::ERROR,
 
 },
 TokenActionItem{

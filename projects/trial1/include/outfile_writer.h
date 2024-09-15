@@ -249,9 +249,9 @@ const std::string scanFunction = R"(
                 
                 int winner = newActives[0];
                 auto winNFA = m_NFAs[winner];
-                if (!winNFA.m_PrevHadAcceptState)
+                if (!winNFA.inAcceptState())
                     continue;
-                //printf("newActives.size() == 1 %c\n", c);
+               // printf("newActives.size() == 1 %c\n", c);
                 return CreateToken(winner, colStart, lineStart, rawStart);
             }
             active = newActives;

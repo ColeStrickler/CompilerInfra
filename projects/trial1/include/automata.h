@@ -16,7 +16,8 @@ enum NFA_OP {
     NFA_OR,
     NFA_STAR,
     NFA_PLUS,
-    NFA_QMARK
+    NFA_QMARK,
+    NFA_CARROT
 };
 
 
@@ -26,6 +27,7 @@ public:
     NFA(uint16_t c);
     NFA(uint16_t rangeStart, uint16_t rangeEnd);
     NFA(NFA* nfa, NFA_OP star_plus_qmark); // star 
+    NFA(NFA* nfa, NFA_OP carrot, std::unordered_set<uint16_t> negations);
     NFA(NFA* nfa1, NFA* nfa2, NFA_OP or_concat);
     NFA(const NFA& other);
     void PlusConstructor(NFA* nfa);

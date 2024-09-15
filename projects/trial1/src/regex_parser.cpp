@@ -515,7 +515,9 @@ RegExprNode *RegexParser::ParseBracketExpr()
         return nullptr;
     bool isCarrotExpr = PeekToken() == TokenType::CARROT;
     if (isCarrotExpr)
+    {
         ConsumeToken();
+    }
 
     RegExprNode* dashExpr = ParseDashExpr();
     if (dashExpr == nullptr)
@@ -528,13 +530,35 @@ RegExprNode *RegexParser::ParseBracketExpr()
     return bracketNode;
 }
 
+NFA *BracketExpr::Translate()
+{
+    if (m_Children.size() == 1)
+    {
+        auto child = m_Children[0];
+        auto node = (DashExpr*)child.m_Node;
+        auto type = child.m_Type;
+        auto chars = node->m_CharactersUsed;
+        if (type == 1)
+        {
+            return new NFA(node->Translate(), NFA_OP::NFA_CARROT, chars);
+        }
+        else
+        {
+            return node->Translate();
+        }
+
+
+    }
+    std::cout << "BracktExpr::Translate() error. m_Children.size() != 1\n";
+    return m_Children[0].m_Node->Translate();
+}
 
 
 RegExprNode *RegexParser::ParseDashExpr()
 {
     PRINT_CALL();
     auto dashNode = NEW_NODE(DashExpr);
-    RegExprNode* cExpr1 = ParseCharLitExpr();
+    auto cExpr1 = (CharLitExpr*)ParseCharLitExpr();
     if (cExpr1 == nullptr)
     {
         return dashNode; // DashExpr ::= EPSILON
@@ -550,18 +574,41 @@ RegExprNode *RegexParser::ParseDashExpr()
         RegExprNode* cExpr2 = ParseCharLitExpr();
         if (cExpr2 == nullptr) // can not match nullptr here because we consumed DASH
             return nullptr;
+        
+        uint16_t beg = cExpr1->m_Children[0].m_Type;
+        uint16_t end = cExpr2->m_Children[0].m_Type;
+        
+        uint16_t start = std::min(beg, end);
+        uint16_t finish = std::min(beg, end);
+
+        for (uint16_t i = start; i <= finish; i++)
+            dashNode->m_CharactersUsed.insert(i);
+
         dashNode->AddChild(ChildNode(1, cExpr2));
-        auto childDashNode = ParseDashExpr();
+        auto childDashNode = (DashExpr*)ParseDashExpr();
         if (childDashNode != nullptr) // should only receive nullptr on parsing failure
+        {
             dashNode->AddChild(ChildNode(2, childDashNode));
+            dashNode->m_CharactersUsed.insert(childDashNode->m_CharactersUsed.begin(), childDashNode->m_CharactersUsed.end());
+        }
     }
     else
     {
-        RegExprNode* cExpr2 = ParseCharExpr();
+        dashNode->m_CharactersUsed.insert(cExpr1->GetChar());
+
+        auto type =PeekToken();
+        if (type == TokenType::CONCAT)
+            ConsumeToken();
+
+
+        auto cExpr2 = (CharExpr*)ParseCharExpr();
         if (cExpr2 != nullptr)
+        {
             dashNode->AddChild(ChildNode(0, cExpr2));
-        return dashNode; // DashExpr ::= CharExpr
+            dashNode->m_CharactersUsed.insert(cExpr2->m_CharactersUsed.begin(), cExpr2->m_CharactersUsed.end());
+        }
     }
+
 
     return dashNode;
 }
@@ -598,6 +645,8 @@ RegExprNode *RegexParser::ParseCharExpr()
     {
         return nullptr;
     }
+
+    charNode->m_CharactersUsed.insert(charLitExpr->m_Children[0].m_Type);
     charNode->AddChild(ChildNode(0, charLitExpr));
     auto tokenType = PeekToken();
 
@@ -607,6 +656,7 @@ RegExprNode *RegexParser::ParseCharExpr()
         RegExprNode* charLitExpr2 = ParseCharLitExpr();
         if (charLitExpr2 == nullptr)
             return nullptr;
+        charNode->m_CharactersUsed.insert(charLitExpr2->m_Children[0].m_Type);
         charNode->AddChild(ChildNode(0, charLitExpr2));
         auto tokenType = PeekToken();
     }
@@ -623,6 +673,7 @@ RegExprNode *RegexParser::ParseCharLitExpr()
 
     if (tokenType != TokenType::CHARACTER && tokenType != TokenType::DOT)
     {
+        printf("no match charLit : %d\n", tokenType);
         return nullptr;
     }
 
@@ -707,10 +758,6 @@ BracketExpr::~BracketExpr()
 {
 }
 
-NFA *BracketExpr::Translate()
-{
-    return m_Children[0].m_Node->Translate();
-}
 
 void BracketExpr::Print()
 {

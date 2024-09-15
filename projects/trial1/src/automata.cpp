@@ -42,6 +42,33 @@ NFA::NFA(NFA *nfa, NFA_OP star_plus_qmark)
 }
 
 
+NFA::NFA(NFA* nfa, NFA_OP carrot, std::unordered_set<uint16_t> negations)
+{
+    m_Transitions.clear();
+    m_TotalStates = nfa->m_StartState.size() + nfa->m_AcceptStates.size();
+
+    m_StartState = nfa->m_StartState;
+    m_AcceptStates = nfa->m_AcceptStates;
+
+
+    for (auto& start: m_StartState)
+    {
+        for (auto& accept: m_AcceptStates)
+        {
+            for (uint16_t c = 0; c <= 0xff; c++)
+            {
+                if (negations.count(c) == 0)
+                    m_Transitions[start][c].insert(accept);
+                
+            }
+        }
+    }
+    
+
+}
+
+
+
 void NFA::PlusConstructor(NFA* nfa)
 {
      m_Transitions.clear();
@@ -384,7 +411,6 @@ std::string NFA::DumpTables()
     }
     ret += "},\n";
 
-
     ret += ".m_AcceptStates = {";
     for (auto& state: m_AcceptStates)
     {
@@ -402,7 +428,6 @@ std::string NFA::DumpTables()
     ret += ".m_CurrentStates = {},\n";
     ret += ".m_PrevHadAcceptState = false\n";
     ret += "},";
-
     return ret;
 }
 
