@@ -26,8 +26,20 @@ int main(int argc, char** argv)
     {
         std::cout << s.first << "," << s.second << "\n";
         RegexCompiler reCompiler;
-        if(reCompiler.CompileRegEx(s.first) == nullptr)
+        NFA* regEx = reCompiler.CompileRegEx(s.first);
+        if(regEx == nullptr)
             std::cout << reCompiler.GetErrorString();
+        else
+            printf("Compilation successful!\n");
+
+
+
+        if (regEx->Accept("18541012412487098777"))
+            printf("Test1 Accept!\n");
+
+        if (regEx->Accept("1289aasa"))
+            printf("Test2 Accept!\n");
     }
+    
 
 };

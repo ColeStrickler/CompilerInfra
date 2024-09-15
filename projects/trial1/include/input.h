@@ -28,8 +28,4 @@ private:
     std::vector<std::pair<std::string, std::string>> m_Regexes; // {regex, action}
 };
 
-
-
-
-
 #endif

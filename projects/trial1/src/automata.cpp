@@ -1,6 +1,6 @@
 #include "automata.h"
 
-NFA::NFA(char c)
+NFA::NFA(uint16_t c) 
 {
     m_StartState.insert(0);
     m_AcceptStates.insert(1);
@@ -9,12 +9,33 @@ NFA::NFA(char c)
     //printf("totalStates %d\n", m_TotalStates);
 }
 
-NFA::NFA(NFA *nfa, NFA_OP star_plus)
+NFA::NFA(uint16_t rangeStart, uint16_t rangeEnd)
 {
-    switch(star_plus)
+    printf("NFA::RangeConstructor\n");
+    m_StartState.insert(0);
+    m_AcceptStates.insert(1);
+    uint16_t beg = std::min(rangeStart, rangeEnd);
+    uint16_t end = std::max(rangeStart, rangeEnd);
+
+    printf("beg: %d, end: %d\n", beg, end);
+
+    for (uint16_t i = beg; i <= end; i++)
+    {
+       // printf("RangeConstructor: i %d\n", i);
+        m_Transitions[0][i].insert(1);
+    }
+
+    printf("Constructed ranged NFA\n");
+    m_TotalStates = 2;
+}
+
+NFA::NFA(NFA *nfa, NFA_OP star_plus_qmark)
+{
+    switch(star_plus_qmark)
     {
         case NFA_OP::NFA_STAR: StarConstructor(nfa); break;
         case NFA_OP::NFA_PLUS: PlusConstructor(nfa); break;
+        case NFA_OP::NFA_QMARK: QmarkConstructor(nfa); break;
         default:
         {
             std::cout << "NFA::NFA() expected NFA_OP == NFA_OP::NFA_STAR || NFA_OP == NFA_OP::NFA_PLUS\n";
@@ -47,6 +68,7 @@ void NFA::PlusConstructor(NFA* nfa)
         m_Transitions[accept][EPSILON].insert(nfa->m_StartState.begin(), nfa->m_StartState.end()); // this the * 1 or more times
     }
 
+    printf("Constructed + NFA\n");
     m_TotalStates += 1;
 }
 
@@ -71,6 +93,38 @@ void NFA::StarConstructor(NFA* nfa)
     m_TotalStates += 1;
 }
 
+void NFA::QmarkConstructor(NFA *nfa)
+{
+    
+    m_Transitions.clear();
+    m_TotalStates = nfa->m_TotalStates;
+    m_StartState.insert(m_TotalStates);
+    m_AcceptStates.insert(m_TotalStates+1);
+
+    ConsumeTransitionTable(nfa->m_Transitions);
+
+    /*
+        We need epsilon transitions from the new start state to the old ones
+    */
+    std::unordered_set<int> oldStart = nfa->m_StartState;
+    for (auto& s: oldStart)
+        m_Transitions[m_TotalStates][EPSILON].insert(s);
+
+
+    /*
+        We need an epsilon transition from the new start to the new accept
+    */
+    m_Transitions[m_TotalStates][EPSILON].insert(m_TotalStates+1);
+
+    /*
+     We need epsilon transitions from the old accept states to the new accept state
+    */
+    std::unordered_set<int> oldAccept = nfa->m_AcceptStates;
+    for (auto& s: oldAccept)
+        m_Transitions[s][EPSILON].insert(m_TotalStates+1);
+
+    m_TotalStates += 2;
+}
 
 void NFA::OrConstructor(NFA * nfa1, NFA * nfa2)
 {
@@ -270,6 +324,15 @@ std::unordered_set<int> NFA::TransitionFunction(std::unordered_set<int> currentS
 
     for (auto& state: currentState)
     {
+
+        if (m_Transitions[state].count(DOT_CHAR) != 0) // we also look for the DOT wildcar character
+        {
+            std::unordered_set<int> transStates = m_Transitions[state][DOT_CHAR];
+            for (auto& tState: transStates)
+                newStates.insert(tState);
+        }
+
+
 
         if (m_Transitions[state].count(character) == 0) // if there is no transition from this state using character --> do nothing
             continue;

@@ -7,6 +7,7 @@
 
 #define TOKEN_INVALID ((TokenType)-1)
 #define NEW_NODE(type) ((type*)(AddPointer(new type())))
+#define PRINT_CALL (std::cout << "CALL: " << std::string(typeid(*this).name()) << "::" << __func__ << std::endl)
 
 enum REGEX_COMPILER_ERROR
 {
@@ -20,9 +21,9 @@ class RegExprNode;
 struct ChildNode
 {
 public:
-    ChildNode(int type , RegExprNode* node);
+    ChildNode(uint16_t type , RegExprNode* node);
 
-    int m_Type;
+    uint16_t m_Type;
     RegExprNode* m_Node;
 };
 
@@ -34,8 +35,9 @@ public:
     virtual void Print();
     virtual NFA* Translate();
     void AddChild(const ChildNode& node);
-protected:
     std::vector<ChildNode> m_Children;
+protected:
+    
 };
 
 class OrExpr : public RegExprNode {
@@ -94,6 +96,7 @@ public:
     CharExpr();
     ~CharExpr();
     NFA* Translate() override;
+    NFA* TranslateBracket();
     void Print() override;
 };
 
@@ -101,6 +104,7 @@ class CharLitExpr : public RegExprNode {
 public:
     CharLitExpr();
     ~CharLitExpr();
+    uint16_t GetChar();
     NFA* Translate() override;
     void Print() override;
 };
@@ -108,14 +112,16 @@ public:
 
 class RegexParser {
 public:
+    /* Public Function */
     RegexParser();
     ~RegexParser();
-    
-
-
     void AddTokens(std::vector<Token> tokens);
-
     RegExprNode* Parse();
+    void SetDebugMode(bool on);
+    void* AddPointer(void* ptr);
+    std::string GetError() { return m_ErrorString; }
+private:
+    /* Parsing Function */
     RegExprNode* ParseRegEx();
     RegExprNode* ParseOrExpr();
     RegExprNode* ParseStarExpr();
@@ -126,10 +132,7 @@ public:
     RegExprNode* ParseCharExpr();
     RegExprNode* ParseCharLitExpr();
 
-
-    void* AddPointer(void* ptr);
-    std::string GetError() { return m_ErrorString; }
-private:
+    /* Utility Functions */
     void Cleanup();
     std::string GetCurrentTokenString();
     Token* ConsumeToken();
@@ -137,7 +140,8 @@ private:
     TokenType PeekNextToken();
     bool AtEnd();
     
-
+    /* Private Variables */
+    bool m_DebugMode;
     Token* m_CurrentToken;
     std::vector<void*> m_PointerCleanup;
     RegExprNode* m_Root;
@@ -145,9 +149,6 @@ private:
     std::vector<Token> m_Tokens;
     std::string m_ErrorString;
 };
-
-
-
 
 
 #endif

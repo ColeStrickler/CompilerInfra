@@ -22,14 +22,12 @@ public:
     */
 
 private:
-    
+
     RegexScanner m_Scanner;
     RegexParser m_Parser;
     REGEX_COMPILER_ERROR m_Error;
 
 };
-
-
 
 
 #endif

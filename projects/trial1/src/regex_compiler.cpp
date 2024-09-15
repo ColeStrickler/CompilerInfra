@@ -1,7 +1,5 @@
 #include "regex_compiler.h"
 
-
-
 RegexCompiler::RegexCompiler() : RegexScanner(), m_Error(REGEX_COMPILER_ERROR::NO_ERROR_COMPILER)
 {
 }
@@ -19,7 +17,7 @@ std::vector<Token> RegexCompiler::TokenizeRegEx(const std::string &regex)
         m_Error = REGEX_COMPILER_ERROR::SCANNER_ERROR;
         return {};
     }
-    return m_Scanner.GetTokens(); 
+    return m_Scanner.GetTokens();
 }
 
 NFA *RegexCompiler::CompileRegEx(const std::string &regex)
@@ -30,6 +28,8 @@ NFA *RegexCompiler::CompileRegEx(const std::string &regex)
         m_Error = REGEX_COMPILER_ERROR::SCANNER_ERROR;
         return nullptr;
     }
+    for (int i = 0; i < tokens.size(); i++)
+        printf("[%d]: %s\n", i, tokens[i].toString().c_str());
 
     auto parseTree = ParseRegEx(tokens);
     if (parseTree == nullptr)
@@ -39,13 +39,12 @@ NFA *RegexCompiler::CompileRegEx(const std::string &regex)
     }
 
     printf("Parse successful!\n");
-        
 
-    return nullptr;
+    return parseTree->Translate();
     /*
         Translate will use syntax directed translation to combine the smaller NFAs into one big NFA
     */
-    //return parseTree->Translate();
+    // return parseTree->Translate();
 }
 
 RegExprNode *RegexCompiler::ParseRegEx(std::vector<Token> tokens)
@@ -58,12 +57,15 @@ std::string RegexCompiler::GetErrorString()
 {
     switch (m_Error)
     {
-        case REGEX_COMPILER_ERROR::NO_ERROR_COMPILER: return "REGEX_COMPILER_ERROR::NO_ERROR_COMPILER\n";
-        case REGEX_COMPILER_ERROR::SCANNER_ERROR: return "REGEX_COMPILER_ERROR::SCANNER_ERROR\n" + m_Scanner.GetErrorString();
-        case REGEX_COMPILER_ERROR::PARSER_ERROR: return "REGEX_COMPILER_ERROR::PARSER_ERROR\n" + m_Parser.GetError(); // add actual error in future
-        default:
-        {
-            return "Unknown error code.\n";
-        }
+    case REGEX_COMPILER_ERROR::NO_ERROR_COMPILER:
+        return "REGEX_COMPILER_ERROR::NO_ERROR_COMPILER\n";
+    case REGEX_COMPILER_ERROR::SCANNER_ERROR:
+        return "REGEX_COMPILER_ERROR::SCANNER_ERROR\n" + m_Scanner.GetErrorString();
+    case REGEX_COMPILER_ERROR::PARSER_ERROR:
+        return "REGEX_COMPILER_ERROR::PARSER_ERROR\n" + m_Parser.GetError(); // add actual error in future
+    default:
+    {
+        return "Unknown error code.\n";
+    }
     }
 }
