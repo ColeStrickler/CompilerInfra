@@ -189,8 +189,6 @@ public:
     {
         if (m_RawLocation >= m_FileContents.size())
         {
-            printf("CALLING EOF\n");
-
             Position pos(m_CurrentColumn, m_CurrentLine);
             return new Token(TokenType::TOKEN_EOF, "EOF", pos, false, "");
         }

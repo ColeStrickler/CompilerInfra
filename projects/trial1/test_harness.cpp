@@ -49,7 +49,7 @@ int main(int argc, char** argv)
         if (token->m_Type == TokenType::TOKEN_EOF)
             break;
         
-        std::cout << token->toString() << "\n";
+        std::cout << token->toString();
     }
 
     
