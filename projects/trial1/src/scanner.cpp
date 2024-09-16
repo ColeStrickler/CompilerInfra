@@ -54,6 +54,11 @@ bool RegexScanner::ScanRegex()
                     case 'n': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, "\n")); break;
                     case '_': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, " ")); break;
                     case '"': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, "\"")); break;
+                    case '+': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, "+")); break;
+                    case '*': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, "*")); break;
+                    case '-': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, "-")); break;
+                    case '(': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, "(")); break;
+                    case ')': AddConcatIfNeeded(); ConsumeChar(); m_Tokens.push_back(Token(TokenType::CHARACTER, ")")); break;
                     default:
                     {
                         m_ErrorCode = ERRORCODE::INVALID_ESCAPE;

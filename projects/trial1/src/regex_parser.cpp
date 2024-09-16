@@ -583,8 +583,14 @@ RegExprNode *RegexParser::ParseDashExpr()
 
         for (uint16_t i = start; i <= finish; i++)
             dashNode->m_CharactersUsed.insert(i);
-
         dashNode->AddChild(ChildNode(1, cExpr2));
+
+
+        auto peekType = PeekToken();
+        if (peekType == TokenType::CONCAT)
+            ConsumeToken();
+        
+
         auto childDashNode = (DashExpr*)ParseDashExpr();
         if (childDashNode != nullptr) // should only receive nullptr on parsing failure
         {
@@ -673,7 +679,7 @@ RegExprNode *RegexParser::ParseCharLitExpr()
 
     if (tokenType != TokenType::CHARACTER && tokenType != TokenType::DOT)
     {
-        printf("no match charLit : %d\n", tokenType);
+        //printf("no match charLit : %d\n", tokenType);
         return nullptr;
     }
 

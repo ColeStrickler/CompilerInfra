@@ -40,8 +40,8 @@ INTEGER [0-9]+
 IDENTIFIER [a-zA-Z_]([a-zA-Z0-9_])*
 STRING \"(\\[nt\\"\\]|[^"\\])*\"
 UNTERMSTRING \"(\\[nt\\"\\]|[^"\\])*[^\"\\]
-BADESCAPESTRLIT \"(\\[^nt\\"\\]|[^"\\])*\"
-BADESCAPESANDUTERM \"(\\[^nt\\"\\]|[^"\\])*[^\"\\]
+BADESCAPESTRLIT \"((\\[^nt\\"\\])|[^"\\])*\"
+BADESCAPESANDUTERM \"((\\[^nt\\"\\])|[^"\\])*[^\"\\]
 COMMENT \#.*
 WHITESPACE " "
 ASSIGN =

@@ -1,5 +1,28 @@
 #include "outfile_writer.h"
 
+
+
+std::string escapeString(const std::string& str) {
+    std::string escaped;
+    for (char c : str) {
+        switch (c) {
+            case '\n': escaped += "\\n"; break;
+            case '\t': escaped += "\\t"; break;
+            case '\r': escaped += "\\r"; break;
+            case '\\': escaped += "\\\\"; break;
+            case '\"': escaped += "\\\""; break;
+            case '\'': escaped += "\\\'"; break;
+            default: 
+                // Append the character as-is if it does not need escaping
+                escaped += c; 
+                break;
+        }
+    }
+    return escaped;
+}
+
+
+
 OutfileWriter::OutfileWriter(const std::string &outFileName, const std::vector<std::pair<NFA *, TokenActionItem>> regex_actions) : m_File(outFileName), m_RegExActions(regex_actions)
 {
     WriteScannerClassFile();
@@ -103,7 +126,7 @@ void OutfileWriter::WriteScannerClassFile()
     {
         AppendFile("TokenActionItem{");
         AppendFile(".m_Action = (INPUTACTION)" + std::to_string(item.second.m_Action) + ",\n");
-        AppendFile(".m_MetaData = \"" + item.second.m_MetaData + "\",\n");
+        AppendFile(".m_MetaData = \"" + escapeString(item.second.m_MetaData) + "\",\n");
         AppendFile(".m_Type = TokenType::" + item.second.m_TokenName + ",\n");
         
         AppendFile("},");

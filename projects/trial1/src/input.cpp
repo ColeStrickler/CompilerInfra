@@ -39,6 +39,7 @@ bool ScannerInputSorter::ParseLines()
         action.m_MetaData = strings.first; // may be overwritten based on type
         if (!GetTokenAction(&action, strings.second))
         {
+            std::cout << line << "\n";
             std::cout << "ScannerInputSorter::ParseLines() --> could not parse line number " << std::to_string(m_LineNo) + "\n";
             return false;
         }

@@ -214,7 +214,7 @@ const std::string scanFunction = R"(
             m_RawLocation += 1;
             
             m_CurrentColumn += 1;
-            
+            int oldCol = m_CurrentColumn;
             if (c == '\n')
             {
                 m_CurrentColumn = 1;
@@ -231,29 +231,46 @@ const std::string scanFunction = R"(
 
             if (newActives.size() == 0)
             {
-                int winner = active[0];
+                int winner = 0;
                 auto winNFA = m_NFAs[winner];
+                for (int i = 0; i < active.size(); i++)
+                {
+                    winner = active[i];
+                    winNFA = m_NFAs[winner];
+                    if (winNFA.m_PrevHadAcceptState)
+                        break;
+                    
+                }
+                
                 
                 m_RawLocation--; // go back
-                m_CurrentColumn--;
+                
+                if (c == '\n')
+                {
+                    m_CurrentLine--;
+                    m_CurrentColumn = oldCol;
+                }
+                else
+                    m_CurrentColumn--;
+
                 if (!winNFA.m_PrevHadAcceptState)
                 {
-                    printf("DragonLex::ScanToken() error, did not match token at [%d,%d]\n", lineStart, colStart);
+                    printf("DragonLex::ScanToken() error, did not match token at [%d,%d] --> last char %c\n", lineStart, colStart, c);
                     return nullptr;
                 }
                 //printf("newActives.size() == 0 --> %c\n", c);
                 return CreateToken(winner, colStart, lineStart, rawStart);
             }
-            else if (newActives.size() == 1)
-            {
-                
-                int winner = newActives[0];
-                auto winNFA = m_NFAs[winner];
-                if (!winNFA.inAcceptState())
-                    continue;
-               // printf("newActives.size() == 1 %c\n", c);
-                return CreateToken(winner, colStart, lineStart, rawStart);
-            }
+            //else if (newActives.size() == 1)
+            //{
+            //    
+            //    int winner = newActives[0];
+            //    auto winNFA = m_NFAs[winner];
+            //    if (!winNFA.inAcceptState())
+            //        continue;
+            //   // printf("newActives.size() == 1 %c\n", c);
+            //    return CreateToken(winner, colStart, lineStart, rawStart);
+            //}
             active = newActives;
         }
 

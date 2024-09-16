@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     std::vector<std::pair<NFA*, TokenActionItem>> outVector;
     for (auto& s: spec)
     {
-        //std::cout << s.first << "\n";
+        std::cout << s.first << "\n";
         RegexCompiler reCompiler;
         
         NFA* regEx = reCompiler.CompileRegEx(s.first);
