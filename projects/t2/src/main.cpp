@@ -12,13 +12,13 @@ int main(int argc, char** argv)
         std::cout << "sorter.ParseLines() --> Parse Error.\n";
         return -1;
     }
-    std::cout << "Init Section:\n" << sorter.GetInitSection() << "\n";
-    std::cout << "Productions:\n";
-    auto rules = sorter.GetProdRules();
-    for (auto& rule: rules)
-        rule.Print();
-    std::cout << "Actions:\n";
-    sorter.PrintActions();
+   // std::cout << "Init Section:\n" << sorter.GetInitSection() << "\n";
+   //std::cout << "Productions:\n";
+    //auto rules = sorter.GetProdRules();
+    //for (auto& rule: rules)
+    //    rule.Print();
+    //std::cout << "Actions:\n";
+    //sorter.PrintActions();
 
     auto initSection = sorter.GetInitSection();
     auto prodRules = sorter.GetProdRules();

@@ -131,7 +131,7 @@ case 4:
             break;
         auto b = s.top();
         s.pop();
-        s.push(a-b);
+        s.push(b-a);
     
 break;
 }
@@ -159,7 +159,7 @@ case 2:
         s.pop();
         auto b = s.top();
         s.pop();
-        s.push(a/b);
+        s.push(b/a);
     
 break;
 }

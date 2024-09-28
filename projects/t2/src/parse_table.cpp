@@ -62,13 +62,13 @@ ParseTable::ParseTable(const std::vector<ProductionRule>& prodRules, std::unorde
            
     }
 
-    printf("3\n");
+   // printf("3\n");
     
 }
 
 std::unordered_set<std::string> ParseTable::ConstructFollowSets(std::string nonterminal)
 {  
-    printf("START followset %s\n", nonterminal.c_str());
+   // printf("START followset %s\n", nonterminal.c_str());
     if (m_ProdRules.count(nonterminal) == 0)
     {
        // printf("followset is term%s\n", nonterminal.c_str());
@@ -83,7 +83,7 @@ std::unordered_set<std::string> ParseTable::ConstructFollowSets(std::string nont
     for (auto& follow: m_DirectlyFollowing[nonterminal])
     {
         auto& follower = follow.follow;
-        printf("non term %s  ---> follower: %s\n", nonterminal.c_str(), follower.c_str());
+        //printf("non term %s  ---> follower: %s\n", nonterminal.c_str(), follower.c_str());
         if (follow.type == RHSType::TERMINAL)
         {
             //printf("followset term %s\n", nonterminal.c_str());
@@ -91,13 +91,13 @@ std::unordered_set<std::string> ParseTable::ConstructFollowSets(std::string nont
         }
         else if (m_FirstSets.find(follower) != m_FirstSets.end() && m_FirstSets[follower].size())
         {
-            printf("followset follower first%s --> FOLLOWED BY %s\n", nonterminal.c_str(), follower.c_str());
+           // printf("followset follower first%s --> FOLLOWED BY %s\n", nonterminal.c_str(), follower.c_str());
             ret.insert(m_FirstSets[follower].begin(), m_FirstSets[follower].end());
             ret.erase("epsilon");
         }
         else
         {
-            printf("here lhs %s follow rhs %s\n", follow.lhs.c_str(), nonterminal.c_str());
+           // printf("here lhs %s follow rhs %s\n", follow.lhs.c_str(), nonterminal.c_str());
 
             if (follow.lhs == nonterminal)
             {
@@ -160,14 +160,6 @@ std::unordered_set<std::string> ParseTable::ConstructFirstSets(std::string nonte
             auto firstAn = ConstructFirstSets(rhs.obj, i+1);
             for (auto& s : firstAn)
             {
-                if (s == "+" && prod.m_LHS == "EXPRTAIL")
-                {
-                   
-                   for (auto& z: prod.m_RHS)
-                    {
-                        std::cout << "EXPRTAIL --> prod " << z.obj << "\n";
-                    }
-                }
 
                  m_ProdRuleFirstSets[nonterminal][s] = prod;
             }
@@ -214,7 +206,7 @@ bool ParseTable::ConstructParseTable()
                     
                     if(m_ParseTable[p.first][follow].AddIfNeeded(RHSObject(m_ProdMapping[follow], follow)))
                     {
-                         std::cout << "Inserting ParseTable1: "  << p.first << "," << follow << " "  << m_ProdRuleFirstSets[p.first][follow].toString() << "\n";
+                         //std::cout << "Inserting ParseTable1: "  << p.first << "," << follow << " "  << m_ProdRuleFirstSets[p.first][follow].toString() << "\n";
                     }
                 }
             }
@@ -225,7 +217,7 @@ bool ParseTable::ConstructParseTable()
                 //    std::cout << "ParseTable::ConstructParseTable() conflicting first sets found _2.\n";
                 //    return false;
                 //}
-                std::cout << "Inserting ParseTable2: "  << p.first << "," << first << " "  << m_ProdRuleFirstSets[p.first][first].toString() << "\n";
+                //std::cout << "Inserting ParseTable2: "  << p.first << "," << first << " "  << m_ProdRuleFirstSets[p.first][first].toString() << "\n";
                 m_ParseTable[p.first][first] = m_ProdRuleFirstSets[p.first][first];
             }
         }

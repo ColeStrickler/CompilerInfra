@@ -29,7 +29,7 @@ std::stack<int> s;
         s.pop();
         auto b = s.top();
         s.pop();
-        s.push(a/b);
+        s.push(b/a);
     }
 #3 { 
        // printf("case 3\n");
@@ -52,7 +52,7 @@ std::stack<int> s;
             break;
         auto b = s.top();
         s.pop();
-        s.push(a-b);
+        s.push(b-a);
     }
 #5 { 
     //printf("case 5 %d\n", s.size());
