@@ -1,0 +1,72 @@
+EXPR ::= TERM EXPRTAIL #6
+EXPRTAIL ::= + TERM #5 EXPRTAIL 
+EXPRTAIL ::= - TERM #4 EXPRTAIL 
+EXPRTAIL ::= epsilon
+TERM ::= FACTOR TERMTAIL
+TERMTAIL ::= * FACTOR #3 TERMTAIL 
+TERMTAIL ::= / FACTOR #2 TERMTAIL
+TERMTAIL ::= epsilon
+FACTOR ::= ( EXPR )
+FACTOR ::= #1 NUMBER 
+%%
+
+int sum = 0;
+
+std::stack<int> s;
+
+
+%%
+#1 { 
+   // printf("case 1 adding %s\n", t->lexeme.c_str());
+    s.push(atoi(t->lexeme.c_str())); 
+    
+    }
+#2 { 
+     //printf("case 2\n");
+        if (s.size() < 2)
+            break;
+        auto a = s.top();
+        s.pop();
+        auto b = s.top();
+        s.pop();
+        s.push(a/b);
+    }
+#3 { 
+       // printf("case 3\n");
+        if (s.size() < 2)
+            break;
+        auto a = s.top();
+        s.pop();
+        auto b = s.top();
+        s.pop();
+        s.push(a*b);
+    }
+#4 { 
+  //  printf("case 4\n");
+
+        auto a = s.top();
+        if (s.size() == 1)
+            s.push(0-a);
+        s.pop();
+        if (!s.size())
+            break;
+        auto b = s.top();
+        s.pop();
+        s.push(a-b);
+    }
+#5 { 
+    //printf("case 5 %d\n", s.size());
+        if (s.size() < 2)
+            break;
+        auto a = s.top();
+        s.pop();
+        auto b = s.top();
+        s.pop();
+        s.push(a+b);
+    }
+#6 { 
+       // printf("case 6 %d\n", s.size());
+        auto a = s.top();
+        if (s.size() == 1)
+            std::cout << "Result: " << a << "\n";
+    }
