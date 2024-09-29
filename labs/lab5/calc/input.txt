@@ -1,0 +1,3 @@
+calculate v 1+2*3
+orate v
+calculate swag 1*2*4+(6*(9+420))

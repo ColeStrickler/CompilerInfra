@@ -1,0 +1,19 @@
+( 7
+NUMBER:4
+* 9
+NUMBER:3
+* 11
+( 12
+NUMBER:4
++ 14
+NUMBER:6
+) 16
+) 17
+/ 18
+( 19
+NUMBER:1
++ 2
+NUMBER:4
++ 4
+NUMBER:7
+) 20

@@ -1,0 +1,400 @@
+State 6 conflicts: 3 reduce/reduce
+
+
+Grammar
+
+    0 $accept: Program END
+
+    1 Program: Ops END
+
+    2 Ops: Ops Op
+    3    | Op
+
+    4 Op: CALCULATE ID Sum
+    5   | ORATE Sum
+    6   | ORATE ID Sum
+    7   | ORATE ID
+
+    8 Sum: Sum PLUS Sub
+    9    | Sub
+
+   10 Sub: Sub MINUS Prod
+   11    | Prod
+
+   12 Prod: Prod MULT Quot
+   13     | Quot
+
+   14 Quot: Quot DIV Base
+   15     | Base
+
+   16 Base: INTLIT
+   17     | LPAR Sum RPAR
+   18     | ID
+
+
+Terminals, with rules where they appear
+
+    END (0) 0 1
+    error (256)
+    ID <strVal> (258) 4 6 7 18
+    INTLIT <intVal> (259) 16
+    LPAR (260) 17
+    RPAR (261) 17
+    PLUS (262) 8
+    MINUS (263) 10
+    DIV (264) 14
+    MULT (265) 12
+    ORATE (266) 5 6 7
+    CALCULATE (267) 4
+
+
+Nonterminals, with rules where they appear
+
+    $accept (13)
+        on left: 0
+    Program <vnode> (14)
+        on left: 1
+        on right: 0
+    Ops <opnode> (15)
+        on left: 2 3
+        on right: 1 2
+    Op <opnode> (16)
+        on left: 4 5 6 7
+        on right: 2 3
+    Sum <mathnode> (17)
+        on left: 8 9
+        on right: 4 5 6 8 17
+    Sub <mathnode> (18)
+        on left: 10 11
+        on right: 8 9 10
+    Prod <mathnode> (19)
+        on left: 12 13
+        on right: 10 11 12
+    Quot <mathnode> (20)
+        on left: 14 15
+        on right: 12 13 14
+    Base <mathnode> (21)
+        on left: 16 17 18
+        on right: 14 15
+
+
+State 0
+
+    0 $accept: • Program END
+
+    ORATE      shift, and go to state 1
+    CALCULATE  shift, and go to state 2
+
+    Program  go to state 3
+    Ops      go to state 4
+    Op       go to state 5
+
+
+State 1
+
+    5 Op: ORATE • Sum
+    6   | ORATE • ID Sum
+    7   | ORATE • ID
+
+    ID      shift, and go to state 6
+    INTLIT  shift, and go to state 7
+    LPAR    shift, and go to state 8
+
+    Sum   go to state 9
+    Sub   go to state 10
+    Prod  go to state 11
+    Quot  go to state 12
+    Base  go to state 13
+
+
+State 2
+
+    4 Op: CALCULATE • ID Sum
+
+    ID  shift, and go to state 14
+
+
+State 3
+
+    0 $accept: Program • END
+
+    END  shift, and go to state 15
+
+
+State 4
+
+    1 Program: Ops • END
+    2 Ops: Ops • Op
+
+    END        shift, and go to state 16
+    ORATE      shift, and go to state 1
+    CALCULATE  shift, and go to state 2
+
+    Op  go to state 17
+
+
+State 5
+
+    3 Ops: Op •
+
+    $default  reduce using rule 3 (Ops)
+
+
+State 6
+
+    6 Op: ORATE ID • Sum
+    7   | ORATE ID •
+   18 Base: ID •
+
+    ID      shift, and go to state 18
+    INTLIT  shift, and go to state 7
+    LPAR    shift, and go to state 8
+
+    END        reduce using rule 7 (Op)
+    END        [reduce using rule 18 (Base)]
+    ORATE      reduce using rule 7 (Op)
+    ORATE      [reduce using rule 18 (Base)]
+    CALCULATE  reduce using rule 7 (Op)
+    CALCULATE  [reduce using rule 18 (Base)]
+    $default   reduce using rule 18 (Base)
+
+    Sum   go to state 19
+    Sub   go to state 10
+    Prod  go to state 11
+    Quot  go to state 12
+    Base  go to state 13
+
+
+State 7
+
+   16 Base: INTLIT •
+
+    $default  reduce using rule 16 (Base)
+
+
+State 8
+
+   17 Base: LPAR • Sum RPAR
+
+    ID      shift, and go to state 18
+    INTLIT  shift, and go to state 7
+    LPAR    shift, and go to state 8
+
+    Sum   go to state 20
+    Sub   go to state 10
+    Prod  go to state 11
+    Quot  go to state 12
+    Base  go to state 13
+
+
+State 9
+
+    5 Op: ORATE Sum •
+    8 Sum: Sum • PLUS Sub
+
+    PLUS  shift, and go to state 21
+
+    $default  reduce using rule 5 (Op)
+
+
+State 10
+
+    9 Sum: Sub •
+   10 Sub: Sub • MINUS Prod
+
+    MINUS  shift, and go to state 22
+
+    $default  reduce using rule 9 (Sum)
+
+
+State 11
+
+   11 Sub: Prod •
+   12 Prod: Prod • MULT Quot
+
+    MULT  shift, and go to state 23
+
+    $default  reduce using rule 11 (Sub)
+
+
+State 12
+
+   13 Prod: Quot •
+   14 Quot: Quot • DIV Base
+
+    DIV  shift, and go to state 24
+
+    $default  reduce using rule 13 (Prod)
+
+
+State 13
+
+   15 Quot: Base •
+
+    $default  reduce using rule 15 (Quot)
+
+
+State 14
+
+    4 Op: CALCULATE ID • Sum
+
+    ID      shift, and go to state 18
+    INTLIT  shift, and go to state 7
+    LPAR    shift, and go to state 8
+
+    Sum   go to state 25
+    Sub   go to state 10
+    Prod  go to state 11
+    Quot  go to state 12
+    Base  go to state 13
+
+
+State 15
+
+    0 $accept: Program END •
+
+    $default  accept
+
+
+State 16
+
+    1 Program: Ops END •
+
+    $default  reduce using rule 1 (Program)
+
+
+State 17
+
+    2 Ops: Ops Op •
+
+    $default  reduce using rule 2 (Ops)
+
+
+State 18
+
+   18 Base: ID •
+
+    $default  reduce using rule 18 (Base)
+
+
+State 19
+
+    6 Op: ORATE ID Sum •
+    8 Sum: Sum • PLUS Sub
+
+    PLUS  shift, and go to state 21
+
+    $default  reduce using rule 6 (Op)
+
+
+State 20
+
+    8 Sum: Sum • PLUS Sub
+   17 Base: LPAR Sum • RPAR
+
+    RPAR  shift, and go to state 26
+    PLUS  shift, and go to state 21
+
+
+State 21
+
+    8 Sum: Sum PLUS • Sub
+
+    ID      shift, and go to state 18
+    INTLIT  shift, and go to state 7
+    LPAR    shift, and go to state 8
+
+    Sub   go to state 27
+    Prod  go to state 11
+    Quot  go to state 12
+    Base  go to state 13
+
+
+State 22
+
+   10 Sub: Sub MINUS • Prod
+
+    ID      shift, and go to state 18
+    INTLIT  shift, and go to state 7
+    LPAR    shift, and go to state 8
+
+    Prod  go to state 28
+    Quot  go to state 12
+    Base  go to state 13
+
+
+State 23
+
+   12 Prod: Prod MULT • Quot
+
+    ID      shift, and go to state 18
+    INTLIT  shift, and go to state 7
+    LPAR    shift, and go to state 8
+
+    Quot  go to state 29
+    Base  go to state 13
+
+
+State 24
+
+   14 Quot: Quot DIV • Base
+
+    ID      shift, and go to state 18
+    INTLIT  shift, and go to state 7
+    LPAR    shift, and go to state 8
+
+    Base  go to state 30
+
+
+State 25
+
+    4 Op: CALCULATE ID Sum •
+    8 Sum: Sum • PLUS Sub
+
+    PLUS  shift, and go to state 21
+
+    $default  reduce using rule 4 (Op)
+
+
+State 26
+
+   17 Base: LPAR Sum RPAR •
+
+    $default  reduce using rule 17 (Base)
+
+
+State 27
+
+    8 Sum: Sum PLUS Sub •
+   10 Sub: Sub • MINUS Prod
+
+    MINUS  shift, and go to state 22
+
+    $default  reduce using rule 8 (Sum)
+
+
+State 28
+
+   10 Sub: Sub MINUS Prod •
+   12 Prod: Prod • MULT Quot
+
+    MULT  shift, and go to state 23
+
+    $default  reduce using rule 10 (Sub)
+
+
+State 29
+
+   12 Prod: Prod MULT Quot •
+   14 Quot: Quot • DIV Base
+
+    DIV  shift, and go to state 24
+
+    $default  reduce using rule 12 (Prod)
+
+
+State 30
+
+   14 Quot: Quot DIV Base •
+
+    $default  reduce using rule 14 (Quot)
