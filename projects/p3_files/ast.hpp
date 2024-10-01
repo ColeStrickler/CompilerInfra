@@ -5,7 +5,7 @@
 #include <list>
 #include "tokens.hpp"
 #include <cassert>
-
+#include <vector>
 
 /* You'll probably want to add a bunch of ASTNode subclasses */
 
@@ -225,16 +225,25 @@ public:
 	{
 		
 	}
-	void unparse(std::ostream& out, int indent) = 0;
+	void unparse(std::ostream& out, int indent)
+	{
+		out << "false";
+	}
 };
 
 class IntLitNode : public ExpNode{
 public:
-	IntLitNode(const Position * p): ExpNode(p) 
+	IntLitNode(const Position * p, int val): ExpNode(p), m_Val(val)
 	{
 		
 	}
-	void unparse(std::ostream& out, int indent) = 0;
+	void unparse(std::ostream& out, int indent)
+	{
+		out << m_Val;
+	}
+private:
+	int m_Val;
+
 };
 
 
@@ -273,11 +282,16 @@ private:
 
 class StrLitNode : public ExpNode{
 public:
-	StrLitNode(const Position * p): ExpNode(p) 
+	StrLitNode(const Position * p, const std::string& val): ExpNode(p), m_Val(val)
 	{
 		
 	}
-	void unparse(std::ostream& out, int indent) = 0;
+	void unparse(std::ostream& out, int indent)
+	{
+		out << m_Val;
+	}
+private:
+	std::string m_Val;
 };
 
 class TrueNode : public ExpNode{
@@ -286,7 +300,10 @@ public:
 	{
 		
 	}
-	void unparse(std::ostream& out, int indent) = 0;
+	void unparse(std::ostream& out, int indent)
+	{
+		out << "true";
+	}
 };
 
 class UnaryExpNode : public ExpNode{
@@ -356,8 +373,7 @@ public:
 **/
 class VarDeclNode : public DeclNode{
 public:
-	VarDeclNode(const Position * p, IDNode * inID, TypeNode * inType) 
-	: DeclNode(p), myID(inID), myType(inType){
+	VarDeclNode(const Position * p, IDNode * inID, TypeNode * inType) : DeclNode(p), myID(inID), myType(inType){
 		assert (myType != nullptr);
 		assert (myID != nullptr);
 	}
@@ -368,12 +384,15 @@ private:
 };
 
 class FormalDeclNode : public VarDeclNode {
-	FormalDeclNode(const Position * p, IDNode * inID, TypeNode * inType) 
-	: VarDeclNode(p, inID, inType) {
+public:
+	FormalDeclNode(const Position * p, IDNode * inID, TypeNode * inType) : VarDeclNode(p, inID, inType) {
 		assert (myType != nullptr);
 		assert (myID != nullptr);
 	}
-	void unparse(std::ostream& out, int indent);
+	void unparse(std::ostream& out, int indent)
+	{
+
+	}
 private:
 	IDNode * myID;
 	TypeNode * myType;
@@ -386,10 +405,28 @@ public:
 		assert (myType != nullptr);
 		assert (myID != nullptr);
 	}
-	void unparse(std::ostream& out, int indent);
+	
+
+	void AddFormals(const std::vector<DeclNode*>& formals)
+	{
+		m_Formals.clear();
+		m_Formals = formals;
+	}
+
+	void unparse(std::ostream& out, int indent)
+	{
+		
+	}
+	void AddStatements(const std::vector<StmtNode*>& statements)
+	{
+		m_FnStatements.clear();
+		m_FnStatements = statements;
+	}
 private:
 	IDNode * myID;
 	TypeNode * myType;
+	std::vector<StmtNode*> m_FnStatements;
+	std::vector<DeclNode*> m_Formals;
 };
 
 class ClassDefnNode : public DeclNode{
@@ -492,7 +529,10 @@ public:
 class BoolTypeNode : public TypeNode{
 public:
 	BoolTypeNode(const Position * p) : TypeNode(p){ }
-	void unparse(std::ostream& out, int indent);
+	void unparse(std::ostream& out, int indent)
+	{
+
+	}
 };
 
 class ClassTypeNode : public TypeNode{
@@ -503,20 +543,41 @@ public:
 
 class ImmutableTypeNode : public TypeNode{
 public:
-	ImmutableTypeNode(const Position * p) : TypeNode(p){ }
-	void unparse(std::ostream& out, int indent);
+	ImmutableTypeNode(const Position * p, TypeNode* type) : TypeNode(p), m_Type(type)
+	{ 
+
+	}
+	void unparse(std::ostream& out, int indent)
+	{
+
+	}
+
+private:
+	TypeNode* m_Type;
 };
 
 class RefTypeNode : public TypeNode{
 public:
-	RefTypeNode(const Position * p) : TypeNode(p){ }
-	void unparse(std::ostream& out, int indent);
+	RefTypeNode(const Position * p, TypeNode* node) : TypeNode(p), m_Type(node)
+	{
+
+	}
+	void unparse(std::ostream& out, int indent)
+	{
+
+	}
+
+private:
+	TypeNode* m_Type;
 };
 
 class VoidTypeNode : public TypeNode{
 public:
 	VoidTypeNode(const Position * p) : TypeNode(p){ }
-	void unparse(std::ostream& out, int indent);
+	void unparse(std::ostream& out, int indent)
+	{
+
+	}
 };
 
 

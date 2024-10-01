@@ -4,6 +4,8 @@ CPP_SRCS := $(wildcard *.cpp)
 OBJ_SRCS := parser.o lexer.o $(CPP_SRCS:.cpp=.o)
 DEPS := $(OBJ_SRCS:.o=.d)
 FLAGS=-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Wuninitialized -Winit-self -Wmissing-declarations -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-conversion -Wsign-promo -Wstrict-overflow=5 -Wundef -Werror -Wno-unused -Wno-unused-parameter
+INFILE=in.a
+OUTFILE=out.txt
 #add these FLAGS for profiling 
 #CXX = clang++
 #FLAGS+=-fprofile-instr-generate -fcoverage-mapping
@@ -15,6 +17,9 @@ FLAGS=-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdis
 all: ac
 
 .PRECIOUS: %.prog
+
+run: all
+	./ac $(INFILE) -u $(OUTFILE)
 
 clean:
 	rm -rf *.output *.o *.cc *.hh $(DEPS) ac

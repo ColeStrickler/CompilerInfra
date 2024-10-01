@@ -115,14 +115,22 @@
 */
 /*       (attribute type)    (nonterminal)    */
 %type <a_lang::ProgramNode *> program
-%type <std::list<a_lang::DeclNode *> *> globals
-%type <a_lang::DeclNode *> decl
-%type <a_lang::VarDeclNode *> varDecl
-%type <a_lang::TypeNode *> type
-%type <a_lang::TypeNode *> datatype
-%type <a_lang::TypeNode *> primType
-%type <a_lang::LocNode *> loc
-%type <a_lang::IDNode *> name
+%type <std::list<a_lang::DeclNode*>*> globals
+%type <a_lang::DeclNode*> decl
+%type <a_lang::VarDeclNode*> varDecl
+%type <a_lang::TypeNode*> type
+%type <std::vector<a_lang::DeclNode*>> maybeFormals
+%type <std::vector<a_lang::DeclNode*>> formalList
+%type <a_lang::TypeNode*> datatype
+%type <a_lang::TypeNode*> primType
+%type <a_lang::FnDeclNode*> fnDecl
+%type <a_lang::FormalDeclNode*> formalDecl
+%type <std::vector<a_lang::StmtNode*>> stmtList
+%type <a_lang::LocNode*> loc
+%type <a_lang::IDNode*> name
+%type <a_lang::ExpNode*> exp
+%type <a_lang::ExpNode*> term
+%type <a_lang::ExpNode*> callExp
 
 %right ASSIGN
 %left OR
@@ -131,6 +139,11 @@
 %left DASH CROSS
 %left STAR SLASH
 %left NOT 
+
+
+
+
+
 
 %%
 
@@ -161,6 +174,8 @@ decl		: varDecl SEMICOL
 		  }
 		| fnDecl
 		  {
+			printf("decl\n");
+			$$ = $1;
 		  }
 
 varDecl		: name COLON type
@@ -175,6 +190,9 @@ varDecl		: name COLON type
 
 type		: IMMUTABLE datatype
 		  {
+			const Position * p;
+		  	p = new Position($1->pos(), $2->pos());
+			$$ = new ImmutableTypeNode(p, $2);
 		  }
 		| datatype
 		  {
@@ -183,6 +201,7 @@ type		: IMMUTABLE datatype
 
 datatype	: REF primType
 		  {
+			$$ = new RefTypeNode($1->pos(), $2);
 		  }
 		| primType
 		  {
@@ -190,6 +209,7 @@ datatype	: REF primType
 		  }
 		| REF name
 		  {
+
 		  }
 		| name
 		  {
@@ -201,9 +221,11 @@ primType	: INT
 		  }
 		| BOOL
 		  {
+			$$ = new BoolTypeNode($1->pos());
 		  }
 		| VOID
 		  {
+			$$ = new VoidTypeNode($1->pos());
 		  }
 
 classTypeDecl 	: name COLON CUSTOM LCURLY classBody RCURLY SEMICOL
@@ -224,24 +246,37 @@ classBody 	: classBody varDecl SEMICOL
 
 fnDecl 		: name COLON LPAREN maybeFormals RPAREN ARROW type LCURLY stmtList RCURLY
 		  {
+			printf("fnDecl\n");
+			$$ = new FnDeclNode($1->pos(), $1, $7);
+			$$->AddFormals($4);
+			$$->AddStatements($9);
 		  }
 
 maybeFormals	: /* epsilon */
 		  {
+			printf("maybeFormals\n");
+			$$ = {};
 		  }
 		| formalList
 		  {
+			$$ = $1;
 		  }
 
 formalList	: formalDecl
 		  {
+			$$ = std::vector<DeclNode*>();
+			$$.push_back($1);
 		  }
 		| formalList COMMA formalDecl
 		  {
+			$$ = std::vector<DeclNode*>();
+			$$.insert($$.end(), $1.begin(), $1.end());
+			$$.push_back($3);
 		  }
 
 formalDecl	: name COLON type
 		  {
+			$$ = new FormalDeclNode($1->pos(), $1, $3);
 		  }
 
 stmtList	: /* epsilon */
@@ -290,6 +325,7 @@ stmt		: varDecl
 		  }
 		| RETURN exp
 		  {
+			printf("return exp\n");
 		  }
 		| RETURN
 		  {
@@ -344,6 +380,7 @@ exp		: exp DASH exp
 
 callExp		: loc LPAREN RPAREN
 		  {
+			printf("no param callExp");
 		  }
 		| loc LPAREN actualList RPAREN
 		  {
@@ -361,24 +398,31 @@ term 		: loc
 		  }
 		| INTLITERAL
 		  {
+			printf("intlit\n");
+			$$ = new IntLitNode($1->pos(), $1->num());
 		  }
 		| STRINGLITERAL
 		  {
+			$$ = new StrLitNode($1->pos(), $1->str());
 		  }
 		| TRUE
 		  {
+			$$ = new TrueNode($1->pos());
 		  }
 		| FALSE
 		  {
+			$$ = new FalseNode($1->pos());
 		  }
 		| EH
 		  {
 		  }
 		| LPAREN exp RPAREN
 		  {
+			$$ = $2;
 		  }
 		| callExp 
 		  {
+			$$ = $1;
 		  }
 
 loc		: name
@@ -391,8 +435,10 @@ loc		: name
 
 name		: ID
 		  {
-                  const Position * pos = $1->pos();
-	 	  $$ = new IDNode(pos, $1->value());
+				
+                const Position * pos = $1->pos();
+	 	  		$$ = new IDNode(pos, $1->value());
+				printf("ID\n");
 		  }
 	
 %%
