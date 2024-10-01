@@ -126,6 +126,7 @@
 %type <a_lang::FnDeclNode*> fnDecl
 %type <a_lang::FormalDeclNode*> formalDecl
 %type <std::vector<a_lang::StmtNode*>> stmtList
+%type <a_lang::StmtNode*> stmt
 %type <a_lang::LocNode*> loc
 %type <a_lang::IDNode*> name
 %type <a_lang::ExpNode*> exp
@@ -326,6 +327,7 @@ stmt		: varDecl
 		| RETURN exp
 		  {
 			printf("return exp\n");
+			$$
 		  }
 		| RETURN
 		  {
@@ -334,48 +336,77 @@ stmt		: varDecl
 
 exp		: exp DASH exp
 		  {
+			$$ = new MinusNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp CROSS exp
 		  {
+			$$ = new PlusNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp STAR exp
 		  {
+			$$ = new TimesNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp SLASH exp
 		  {
+			$$ = new DivideNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp AND exp
 		  {
+			$$ = new AndNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp OR exp
 		  {
+			$$ = new OrNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp EQUALS exp
 		  {
+			$$ = new EqualsNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp NOTEQUALS exp
 		  {
+			$$ = new NotNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp GREATER exp
 		  {
+			$$ = new GreaterNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp GREATEREQ exp
 		  {
+			$$ = new GreaterEqNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp LESS exp
 		  {
+			$$ = new LessNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| exp LESSEQ exp
 		  {
+			$$ = new LessEqNode($1->pos());
+			$$->AddExpressions($1, $3);
 		  }
 		| NOT exp
 		  {
+			$$ = new NotNode($1->pos());
+			$$->AddChild($2);
 		  }
 		| DASH term
 		  {
+			$$ = new NegationNode($1->pos());
+			$$->AddChild($2);
 		  }
 		| term
 		  {
+			$$ = $1;
 		  }
 
 callExp		: loc LPAREN RPAREN
