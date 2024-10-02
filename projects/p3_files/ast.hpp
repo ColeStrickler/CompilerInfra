@@ -9,6 +9,9 @@
 
 /* You'll probably want to add a bunch of ASTNode subclasses */
 
+void strout(std::ostream& out, const std::string& str, int count);
+
+
 namespace a_lang
 {
 
@@ -102,7 +105,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "and", indent);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -115,7 +120,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "/", indent);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -128,7 +135,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "==", indent);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -141,7 +150,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, ">=", 0);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -154,7 +165,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, ">", 0);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -167,7 +180,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent) 
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "<=", 0);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -180,7 +195,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent) 
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "<", 0);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -193,7 +210,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "-", 0);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -206,7 +225,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "!=", 0);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -219,7 +240,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent) 
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "or", indent);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -232,7 +255,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent) 
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "+", 0);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -245,7 +270,9 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
-
+			m_Children[0]->unparse(out, indent);
+			strout(out, "*", 0);
+			m_Children[1]->unparse(out, indent);
 		}
 	};
 
@@ -278,7 +305,7 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
-			out << "false";
+			strout(out, "false", 0);
 		}
 	};
 
@@ -290,7 +317,7 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
-			out << m_Val;
+			strout(out, std::to_string(m_Val), 0);
 		}
 
 	private:
@@ -318,7 +345,7 @@ namespace a_lang
 			: LocNode(p), name(nameIn) {}
 		void unparse(std::ostream &out, int indent)
 		{
-			out << name;
+			strout(out, name ,indent);
 		}
 
 	private:
@@ -412,8 +439,48 @@ namespace a_lang
 	{
 	public:
 		StmtNode(const Position *p) : ASTNode(p) {}
-		void unparse(std::ostream &out, int indent) override = 0;
+		void unparse(std::ostream &out, int indent)
+		{
+
+		}
 	};
+
+		class StmtListNode : public ASTNode
+	{
+	public:
+		StmtListNode(const Position *p, bool useSemicol) : ASTNode(p), m_UseSemicolon(useSemicol) {}
+		void unparse(std::ostream &out, int indent)
+		{
+			if (myPos == nullptr)
+			{
+				printf("myPos == nullptr\n");
+				return;
+			}
+			for (auto& child: m_Children)
+			{
+				child->unparse(out, indent);
+			}
+
+
+			if (m_UseSemicolon)
+				out << ";\n";
+		}
+
+		void AddChildren(const std::vector<StmtNode*> children)
+		{
+			m_Children.insert(m_Children.end(), children.begin(), children.end());
+		}
+
+		void AddChild(StmtNode* child)
+		{
+			m_Children.push_back(child);
+		}
+
+		bool m_UseSemicolon;
+		std::vector<StmtNode*> m_Children;
+		
+	};
+
 
 	class AssignStmtNode : public StmtNode
 	{
@@ -438,6 +505,19 @@ namespace a_lang
 	public:
 		DeclNode(const Position *p) : StmtNode(p) {}
 		void unparse(std::ostream &out, int indent) override = 0;
+	};
+	class TypeNode : public ASTNode
+	{
+	protected:
+		TypeNode(const Position *p) : ASTNode(p)
+		{
+		}
+
+	public:
+		virtual void unparse(std::ostream &out, int indent)
+		{
+
+		}
 	};
 
 	/** A variable declaration.
@@ -467,6 +547,9 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
+			myID->unparse(out, indent);
+			out << ": ";
+			myType->unparse(out, indent);
 		}
 
 	private:
@@ -484,6 +567,7 @@ namespace a_lang
 			assert(myID != nullptr);
 		}
 
+
 		void AddFormals(const std::vector<DeclNode *> &formals)
 		{
 			m_Formals.clear();
@@ -496,22 +580,22 @@ namespace a_lang
 			out << " : (";
 			for (auto& arg: m_Formals)
 				arg->unparse(out, indent);
-			out << ") -> {\n";
-			for (auto& stmt: m_FnStatements)
-				stmt->unparse(out, indent+1);
+			out << ") -> ";
+			myType->unparse(out, 0);
+			out << " {\n";
+			m_StmtList->unparse(out, indent+1);
 			out << "}\n";
 
 		}
-		void AddStatements(const std::vector<StmtNode *> &statements)
+		void AddStatements(StmtListNode* stmtList)
 		{
-			m_FnStatements.clear();
-			m_FnStatements = statements;
+			m_StmtList = stmtList;
 		}
 
 	private:
 		IDNode *myID;
 		TypeNode *myType;
-		std::vector<StmtNode *> m_FnStatements;
+		StmtListNode* m_StmtList;
 		std::vector<DeclNode *> m_Formals;
 	};
 
@@ -604,11 +688,14 @@ namespace a_lang
 	class ReturnStmtNode : public StmtNode
 	{
 	public:
-		ReturnStmtNode(const Position *p) : StmtNode(p) {}
+		ReturnStmtNode(const Position *p, ExpNode* node) : StmtNode(p), m_Child(node) {}
 		void unparse(std::ostream &out, int indent) override
 		{
-
+			strout(out, "return ", indent);
+			m_Child->unparse(out, 0);
 		}
+
+		ExpNode* m_Child;
 	};
 
 	class ToConsoleStmtNode : public StmtNode
@@ -639,22 +726,16 @@ namespace a_lang
 	 * the declaration "int a", the int part is the type node (a is an IDNode
 	 * and the whole thing is a DeclNode).
 	 **/
-	class TypeNode : public ASTNode
-	{
-	protected:
-		TypeNode(const Position *p) : ASTNode(p)
-		{
-		}
 
-	public:
-		virtual void unparse(std::ostream &out, int indent) = 0;
-	};
 
 	class IntTypeNode : public TypeNode
 	{
 	public:
 		IntTypeNode(const Position *p) : TypeNode(p) {}
-		void unparse(std::ostream &out, int indent);
+		void unparse(std::ostream &out, int indent)
+		{
+			strout(out, "int", indent);
+		}
 	};
 
 	class BoolTypeNode : public TypeNode
@@ -663,6 +744,7 @@ namespace a_lang
 		BoolTypeNode(const Position *p) : TypeNode(p) {}
 		void unparse(std::ostream &out, int indent)
 		{
+			strout(out, "bool", indent);
 		}
 	};
 
@@ -670,7 +752,10 @@ namespace a_lang
 	{
 	public:
 		ClassTypeNode(const Position *p) : TypeNode(p) {}
-		void unparse(std::ostream &out, int indent);
+		void unparse(std::ostream &out, int indent)
+		{
+			strout(out, "class", indent);
+		}
 	};
 
 	class ImmutableTypeNode : public TypeNode
@@ -681,6 +766,7 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
+			strout(out, "", indent);
 		}
 
 	private:
@@ -695,6 +781,8 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
+			strout(out, "&", indent);
+			m_Type->unparse(out, indent);
 		}
 
 	private:
@@ -707,6 +795,7 @@ namespace a_lang
 		VoidTypeNode(const Position *p) : TypeNode(p) {}
 		void unparse(std::ostream &out, int indent)
 		{
+			strout(out, "void", indent);
 		}
 	};
 

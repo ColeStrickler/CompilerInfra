@@ -9,3 +9,10 @@ a_lang::ProgramNode::ProgramNode(std::list<DeclNode *> * globalsIn)
 		);
 	}
 }
+
+void strout(std::ostream& out, const std::string& str, int count)
+{
+	for (int i = 0 ; i < count; i++)
+		out << "\t";
+	out << str;
+}

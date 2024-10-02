@@ -427,8 +427,14 @@ namespace a_lang {
       // program
       char dummy9[sizeof (a_lang::ProgramNode *)];
 
+      // stmtList
+      char dummy10[sizeof (a_lang::StmtListNode*)];
+
+      // stmt
+      char dummy11[sizeof (a_lang::StmtNode*)];
+
       // STRINGLITERAL
-      char dummy10[sizeof (a_lang::StrToken *)];
+      char dummy12[sizeof (a_lang::StrToken *)];
 
       // AND
       // ASSIGN
@@ -472,25 +478,22 @@ namespace a_lang {
       // TRUE
       // VOID
       // WHILE
-      char dummy11[sizeof (a_lang::Token *)];
+      char dummy13[sizeof (a_lang::Token *)];
 
       // type
       // datatype
       // primType
-      char dummy12[sizeof (a_lang::TypeNode*)];
+      char dummy14[sizeof (a_lang::TypeNode*)];
 
       // varDecl
-      char dummy13[sizeof (a_lang::VarDeclNode*)];
+      char dummy15[sizeof (a_lang::VarDeclNode*)];
 
       // globals
-      char dummy14[sizeof (std::list<a_lang::DeclNode*>*)];
+      char dummy16[sizeof (std::list<a_lang::DeclNode*>*)];
 
       // maybeFormals
       // formalList
-      char dummy15[sizeof (std::vector<a_lang::DeclNode*>)];
-
-      // stmtList
-      char dummy16[sizeof (std::vector<a_lang::StmtNode*>)];
+      char dummy17[sizeof (std::vector<a_lang::DeclNode*>)];
     };
 
     /// The size of the largest semantic type.
@@ -740,6 +743,14 @@ namespace a_lang {
         value.move< a_lang::ProgramNode * > (std::move (that.value));
         break;
 
+      case symbol_kind::S_stmtList: // stmtList
+        value.move< a_lang::StmtListNode* > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt: // stmt
+        value.move< a_lang::StmtNode* > (std::move (that.value));
+        break;
+
       case symbol_kind::S_STRINGLITERAL: // STRINGLITERAL
         value.move< a_lang::StrToken * > (std::move (that.value));
         break;
@@ -806,10 +817,6 @@ namespace a_lang {
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.move< std::vector<a_lang::DeclNode*> > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmtList: // stmtList
-        value.move< std::vector<a_lang::StmtNode*> > (std::move (that.value));
         break;
 
       default:
@@ -942,6 +949,30 @@ namespace a_lang {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, a_lang::StmtListNode*&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const a_lang::StmtListNode*& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, a_lang::StmtNode*&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const a_lang::StmtNode*& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, a_lang::StrToken *&& v)
         : Base (t)
         , value (std::move (v))
@@ -1013,18 +1044,6 @@ namespace a_lang {
       {}
 #endif
 
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, std::vector<a_lang::StmtNode*>&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const std::vector<a_lang::StmtNode*>& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-
       /// Destroy the symbol.
       ~basic_symbol ()
       {
@@ -1085,6 +1104,14 @@ switch (yykind)
 
       case symbol_kind::S_program: // program
         value.template destroy< a_lang::ProgramNode * > ();
+        break;
+
+      case symbol_kind::S_stmtList: // stmtList
+        value.template destroy< a_lang::StmtListNode* > ();
+        break;
+
+      case symbol_kind::S_stmt: // stmt
+        value.template destroy< a_lang::StmtNode* > ();
         break;
 
       case symbol_kind::S_STRINGLITERAL: // STRINGLITERAL
@@ -1153,10 +1180,6 @@ switch (yykind)
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.template destroy< std::vector<a_lang::DeclNode*> > ();
-        break;
-
-      case symbol_kind::S_stmtList: // stmtList
-        value.template destroy< std::vector<a_lang::StmtNode*> > ();
         break;
 
       default:
@@ -2394,7 +2417,7 @@ switch (yykind)
 
 #line 5 "a.yy"
 } // a_lang
-#line 2398 "frontend.hh"
+#line 2421 "frontend.hh"
 
 
 

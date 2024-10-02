@@ -125,7 +125,7 @@
 %type <a_lang::TypeNode*> primType
 %type <a_lang::FnDeclNode*> fnDecl
 %type <a_lang::FormalDeclNode*> formalDecl
-%type <std::vector<a_lang::StmtNode*>> stmtList
+%type <a_lang::StmtListNode*> stmtList
 %type <a_lang::StmtNode*> stmt
 %type <a_lang::LocNode*> loc
 %type <a_lang::IDNode*> name
@@ -282,9 +282,18 @@ formalDecl	: name COLON type
 
 stmtList	: /* epsilon */
 		  {
+			printf("null stmtlist\n");
+			$$ = new StmtListNode(nullptr, false);
 		  }
 		| stmtList stmt SEMICOL
 		  {
+			printf("1\n");
+			auto pos = $1->pos() == nullptr ? $2->pos() : $1->pos();
+			printf("2\n");
+			$$ = new StmtListNode(pos, true);
+			printf("stmt list\n");
+			$$->AddChildren($1->m_Children);
+			$$->AddChild($2);
 		  }
 		| stmtList blockStmt
 		  {
@@ -302,6 +311,7 @@ blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
 
 stmt		: varDecl
 		  {
+			$$ = $1;
 		  }
 		| loc ASSIGN exp
 		  {
@@ -327,7 +337,7 @@ stmt		: varDecl
 		| RETURN exp
 		  {
 			printf("return exp\n");
-			$$
+			$$ = new ReturnStmtNode($1->pos(), $2);
 		  }
 		| RETURN
 		  {

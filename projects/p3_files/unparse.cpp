@@ -48,8 +48,5 @@ void VarDeclNode::unparse(std::ostream& out, int indent){
 	out << ";\n";
 }
 
-void IntTypeNode::unparse(std::ostream& out, int indent){
-	out << "int";
-}
 
 } // End namespace a_lang

@@ -192,13 +192,13 @@ Nonterminals, with rules where they appear
     formalDecl <a_lang::FormalDeclNode*> (61)
         on left: 27
         on right: 25 26
-    stmtList <std::vector<a_lang::StmtNode*>> (62)
+    stmtList <a_lang::StmtListNode*> (62)
         on left: 28 29 30
         on right: 22 29 30 31 32 33
     blockStmt (63)
         on left: 31 32 33
         on right: 30
-    stmt (64)
+    stmt <a_lang::StmtNode*> (64)
         on left: 34 35 36 37 38 39 40 41 42 43
         on right: 29
     exp <a_lang::ExpNode*> (65)
