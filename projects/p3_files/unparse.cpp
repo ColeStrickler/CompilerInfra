@@ -6,9 +6,7 @@ namespace a_lang{
 doIndent is declared static, which means that it can 
 only be called in this file (its symbol is not exported).
 */
-static void doIndent(std::ostream& out, int indent){
-	for (int k = 0 ; k < indent; k++){ out << "\t"; }
-}
+
 
 /*
 In this code, the intention is that functions are grouped 
@@ -45,7 +43,9 @@ void VarDeclNode::unparse(std::ostream& out, int indent){
 	this->myID->unparse(out, 0);
 	out << ": ";
 	this->myType->unparse(out, 0);
-	out << ";\n";
+	if (m_PrintSemicolon)
+		out << ";\n";
+
 }
 
 

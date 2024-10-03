@@ -131,7 +131,8 @@
 %type <a_lang::IDNode*> name
 %type <a_lang::ExpNode*> exp
 %type <a_lang::ExpNode*> term
-%type <a_lang::ExpNode*> callExp
+%type <a_lang::CallExpNode*> callExp
+%type <std::vector<a_lang::ExpNode*>> actualList
 
 %right ASSIGN
 %left OR
@@ -168,14 +169,14 @@ globals		: globals decl
 
 decl		: varDecl SEMICOL
 		  {
-		  $$ = $1;
+		  	$$ = $1;
+			$1->m_PrintSemicolon = true;
 		  }
 		| classTypeDecl
 		  {
 		  }
 		| fnDecl
 		  {
-			printf("decl\n");
 			$$ = $1;
 		  }
 
@@ -214,6 +215,7 @@ datatype	: REF primType
 		  }
 		| name
 		  {
+			
 		  }
 
 primType	: INT
@@ -247,7 +249,6 @@ classBody 	: classBody varDecl SEMICOL
 
 fnDecl 		: name COLON LPAREN maybeFormals RPAREN ARROW type LCURLY stmtList RCURLY
 		  {
-			printf("fnDecl\n");
 			$$ = new FnDeclNode($1->pos(), $1, $7);
 			$$->AddFormals($4);
 			$$->AddStatements($9);
@@ -255,7 +256,6 @@ fnDecl 		: name COLON LPAREN maybeFormals RPAREN ARROW type LCURLY stmtList RCUR
 
 maybeFormals	: /* epsilon */
 		  {
-			printf("maybeFormals\n");
 			$$ = {};
 		  }
 		| formalList
@@ -282,14 +282,11 @@ formalDecl	: name COLON type
 
 stmtList	: /* epsilon */
 		  {
-			printf("null stmtlist\n");
 			$$ = new StmtListNode(nullptr, false);
 		  }
 		| stmtList stmt SEMICOL
 		  {
-			printf("1\n");
 			auto pos = $1->pos() == nullptr ? $2->pos() : $1->pos();
-			printf("2\n");
 			$$ = new StmtListNode(pos, true);
 			printf("stmt list\n");
 			$$->AddChildren($1->m_Children);
@@ -315,9 +312,12 @@ stmt		: varDecl
 		  }
 		| loc ASSIGN exp
 		  {
+			printf("returning assignstmtnode\n");
+			$$ = new AssignStmtNode($1->pos(), $1, $3);
 		  }
 		| callExp
 		  {
+			$$ = new CallStmtNode($1->pos(), $1);
 		  }
 		| loc POSTDEC
 		  {
@@ -336,11 +336,11 @@ stmt		: varDecl
 		  }
 		| RETURN exp
 		  {
-			printf("return exp\n");
 			$$ = new ReturnStmtNode($1->pos(), $2);
 		  }
 		| RETURN
 		  {
+			$$ = new ReturnStmtNode($1->pos(), nullptr);
 		  }
 
 
@@ -417,21 +417,28 @@ exp		: exp DASH exp
 		| term
 		  {
 			$$ = $1;
+			printf("returning term\n");
 		  }
 
 callExp		: loc LPAREN RPAREN
 		  {
-			printf("no param callExp");
+			$$ = new CallExpNode($1->pos(), $1);
 		  }
 		| loc LPAREN actualList RPAREN
 		  {
+			$$ = new CallExpNode($1->pos(), $1);
+			$$->AddExpressions($3);
 		  }
 
 actualList	: exp
 		  {
+			$$ = {$1};
 		  }
 		| actualList COMMA exp
 		  {
+			$$ = std::vector<ExpNode*>();
+			$$.insert($$.end(), $1.begin(), $1.end());
+			$$.push_back($3);
 		  }
 
 term 		: loc
@@ -439,7 +446,6 @@ term 		: loc
 		  }
 		| INTLITERAL
 		  {
-			printf("intlit\n");
 			$$ = new IntLitNode($1->pos(), $1->num());
 		  }
 		| STRINGLITERAL
@@ -459,7 +465,9 @@ term 		: loc
 		  }
 		| LPAREN exp RPAREN
 		  {
+			printf("LPAREN exp RPAREN\n");
 			$$ = $2;
+			$$->m_InsideParentheses = true;
 		  }
 		| callExp 
 		  {
@@ -468,10 +476,11 @@ term 		: loc
 
 loc		: name
 		  {
-		  $$ = $1;
+			$$ = new LocNode($1->pos(), $1, nullptr);
 		  }
 		| loc ARROW name
 		  {
+			$$ = new LocNode($1->pos(), $1, $3);
 		  }
 
 name		: ID
@@ -479,7 +488,6 @@ name		: ID
 				
                 const Position * pos = $1->pos();
 	 	  		$$ = new IDNode(pos, $1->value());
-				printf("ID\n");
 		  }
 	
 %%

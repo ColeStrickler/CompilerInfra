@@ -80,11 +80,12 @@ static void outputAST(ASTNode * ast, const char * outPath){
 
 static bool doUnparsing(const char * inputPath, const char * outPath){
 	a_lang::ProgramNode * ast = parse(inputPath);
+	printf("finished parse\n");
 	if (ast == nullptr){ 
 		std::cerr << "No AST built\n";
 		return false;
 	}
-
+	printf("do unparse:\n");
 	outputAST(ast, outPath);
 	return true;
 }

@@ -1,6 +1,5 @@
-swag: int;
+
 v : () -> int {
-    x: int;
-    y: bool;
-    return 1 + 2 * 3;
+    x: bool;
+	return  (1 + 2 *(3*4+4*(3*3)/2)) * 3;
 }

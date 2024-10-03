@@ -398,43 +398,45 @@ namespace a_lang {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
+      // callExp
+      char dummy1[sizeof (a_lang::CallExpNode*)];
+
       // decl
-      char dummy1[sizeof (a_lang::DeclNode*)];
+      char dummy2[sizeof (a_lang::DeclNode*)];
 
       // exp
-      // callExp
       // term
-      char dummy2[sizeof (a_lang::ExpNode*)];
+      char dummy3[sizeof (a_lang::ExpNode*)];
 
       // fnDecl
-      char dummy3[sizeof (a_lang::FnDeclNode*)];
+      char dummy4[sizeof (a_lang::FnDeclNode*)];
 
       // formalDecl
-      char dummy4[sizeof (a_lang::FormalDeclNode*)];
+      char dummy5[sizeof (a_lang::FormalDeclNode*)];
 
       // name
-      char dummy5[sizeof (a_lang::IDNode*)];
+      char dummy6[sizeof (a_lang::IDNode*)];
 
       // ID
-      char dummy6[sizeof (a_lang::IDToken *)];
+      char dummy7[sizeof (a_lang::IDToken *)];
 
       // INTLITERAL
-      char dummy7[sizeof (a_lang::IntLitToken *)];
+      char dummy8[sizeof (a_lang::IntLitToken *)];
 
       // loc
-      char dummy8[sizeof (a_lang::LocNode*)];
+      char dummy9[sizeof (a_lang::LocNode*)];
 
       // program
-      char dummy9[sizeof (a_lang::ProgramNode *)];
+      char dummy10[sizeof (a_lang::ProgramNode *)];
 
       // stmtList
-      char dummy10[sizeof (a_lang::StmtListNode*)];
+      char dummy11[sizeof (a_lang::StmtListNode*)];
 
       // stmt
-      char dummy11[sizeof (a_lang::StmtNode*)];
+      char dummy12[sizeof (a_lang::StmtNode*)];
 
       // STRINGLITERAL
-      char dummy12[sizeof (a_lang::StrToken *)];
+      char dummy13[sizeof (a_lang::StrToken *)];
 
       // AND
       // ASSIGN
@@ -478,22 +480,25 @@ namespace a_lang {
       // TRUE
       // VOID
       // WHILE
-      char dummy13[sizeof (a_lang::Token *)];
+      char dummy14[sizeof (a_lang::Token *)];
 
       // type
       // datatype
       // primType
-      char dummy14[sizeof (a_lang::TypeNode*)];
+      char dummy15[sizeof (a_lang::TypeNode*)];
 
       // varDecl
-      char dummy15[sizeof (a_lang::VarDeclNode*)];
+      char dummy16[sizeof (a_lang::VarDeclNode*)];
 
       // globals
-      char dummy16[sizeof (std::list<a_lang::DeclNode*>*)];
+      char dummy17[sizeof (std::list<a_lang::DeclNode*>*)];
 
       // maybeFormals
       // formalList
-      char dummy17[sizeof (std::vector<a_lang::DeclNode*>)];
+      char dummy18[sizeof (std::vector<a_lang::DeclNode*>)];
+
+      // actualList
+      char dummy19[sizeof (std::vector<a_lang::ExpNode*>)];
     };
 
     /// The size of the largest semantic type.
@@ -705,12 +710,15 @@ namespace a_lang {
       {
         switch (this->kind ())
     {
+      case symbol_kind::S_callExp: // callExp
+        value.move< a_lang::CallExpNode* > (std::move (that.value));
+        break;
+
       case symbol_kind::S_decl: // decl
         value.move< a_lang::DeclNode* > (std::move (that.value));
         break;
 
       case symbol_kind::S_exp: // exp
-      case symbol_kind::S_callExp: // callExp
       case symbol_kind::S_term: // term
         value.move< a_lang::ExpNode* > (std::move (that.value));
         break;
@@ -819,6 +827,10 @@ namespace a_lang {
         value.move< std::vector<a_lang::DeclNode*> > (std::move (that.value));
         break;
 
+      case symbol_kind::S_actualList: // actualList
+        value.move< std::vector<a_lang::ExpNode*> > (std::move (that.value));
+        break;
+
       default:
         break;
     }
@@ -837,6 +849,18 @@ namespace a_lang {
 #else
       basic_symbol (typename Base::kind_type t)
         : Base (t)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, a_lang::CallExpNode*&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const a_lang::CallExpNode*& v)
+        : Base (t)
+        , value (v)
       {}
 #endif
 
@@ -1044,6 +1068,18 @@ namespace a_lang {
       {}
 #endif
 
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::vector<a_lang::ExpNode*>&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::vector<a_lang::ExpNode*>& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+
       /// Destroy the symbol.
       ~basic_symbol ()
       {
@@ -1068,12 +1104,15 @@ namespace a_lang {
         // Value type destructor.
 switch (yykind)
     {
+      case symbol_kind::S_callExp: // callExp
+        value.template destroy< a_lang::CallExpNode* > ();
+        break;
+
       case symbol_kind::S_decl: // decl
         value.template destroy< a_lang::DeclNode* > ();
         break;
 
       case symbol_kind::S_exp: // exp
-      case symbol_kind::S_callExp: // callExp
       case symbol_kind::S_term: // term
         value.template destroy< a_lang::ExpNode* > ();
         break;
@@ -1180,6 +1219,10 @@ switch (yykind)
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.template destroy< std::vector<a_lang::DeclNode*> > ();
+        break;
+
+      case symbol_kind::S_actualList: // actualList
+        value.template destroy< std::vector<a_lang::ExpNode*> > ();
         break;
 
       default:
@@ -2417,7 +2460,7 @@ switch (yykind)
 
 #line 5 "a.yy"
 } // a_lang
-#line 2421 "frontend.hh"
+#line 2464 "frontend.hh"
 
 
 

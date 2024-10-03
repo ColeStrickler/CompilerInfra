@@ -10,8 +10,9 @@
 /* You'll probably want to add a bunch of ASTNode subclasses */
 
 void strout(std::ostream& out, const std::string& str, int count);
-
-
+static void doIndent(std::ostream& out, int indent){
+	for (int k = 0 ; k < indent; k++){ out << "\t"; }
+}
 namespace a_lang
 {
 
@@ -34,9 +35,9 @@ namespace a_lang
 		virtual void unparse(std::ostream &out, int indent) = 0;
 		const Position *pos() { return myPos; }
 		std::string posStr() { return pos()->span(); }
-
-	protected:
 		const Position *myPos = nullptr;
+	protected:
+		
 	};
 
 	/**
@@ -82,7 +83,20 @@ namespace a_lang
 			m_Children.push_back(child);
 		}
 
+		void begin(std::ostream &out, int indent)
+		{
+			if (m_InsideParentheses)
+				out << "(";
+		}
+
+		void end(std::ostream &out, int indent)
+		{
+			if (m_InsideParentheses)
+				out << ")";
+		}
+
 		std::vector<ExpNode*> m_Children;
+		bool m_InsideParentheses;
 	};
 
 	/* BINARYEXP NODES */
@@ -105,9 +119,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "and", indent);
+			strout(out, " and ", indent);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -120,9 +136,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "/", indent);
+			strout(out, " / ", indent);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -135,9 +153,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "==", indent);
+			strout(out, " == ", indent);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -150,9 +170,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, ">=", 0);
+			strout(out, " >= ", 0);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -165,9 +187,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, ">", 0);
+			strout(out, " > ", 0);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -180,9 +204,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent) 
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "<=", 0);
+			strout(out, " <= ", 0);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -195,9 +221,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent) 
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "<", 0);
+			strout(out, " < ", 0);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -210,9 +238,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "-", 0);
+			strout(out, " - ", 0);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -225,9 +255,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "!=", 0);
+			strout(out, " != ", 0);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -240,9 +272,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent) 
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "or", indent);
+			strout(out, " or ", indent);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -255,9 +289,11 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent) 
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "+", 0);
+			strout(out, " + ", 0);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
 	};
 
@@ -270,22 +306,70 @@ namespace a_lang
 
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			m_Children[0]->unparse(out, indent);
-			strout(out, "*", 0);
+			strout(out, " * ", 0);
 			m_Children[1]->unparse(out, indent);
+			end(out, indent);
 		}
+	};
+
+
+		/** A memory location. LocNodes subclass ExpNode
+	 * because they can be used as part of an expression.
+	 **/
+	class LocNode : public ExpNode
+	{
+	public:
+		LocNode(const Position* p) : ExpNode(p) {}
+		LocNode(const Position *p, LocNode* body, LocNode* child)
+			: ExpNode(p), m_Body(body), m_Child(child) {}
+		void unparse(std::ostream &out, int indent)
+		{
+			begin(out, indent);
+			m_Body->unparse(out, indent);
+			if (m_Child)
+			{
+				out << "->";
+				m_Child->unparse(out, indent);
+			}
+			end(out, indent);
+		}
+
+		LocNode* m_Body;
+		LocNode* m_Child;
+
 	};
 
 	class CallExpNode : public ExpNode
 	{
 	public:
-		CallExpNode(const Position *p) : ExpNode(p)
+		CallExpNode(const Position *p, LocNode* loc) : ExpNode(p), m_Loc(loc)
 		{
 		}
 		void unparse(std::ostream &out, int indent) 
 		{
-
+			doIndent(out, indent);
+			begin(out, indent);
+			m_Loc->unparse(out, 0);
+			out << "(";
+			for (uint32_t i = 0; i < m_ExprList.size(); i++)
+			{
+				m_ExprList[i]->unparse(out, 0);
+				if (i != m_ExprList.size() - 1)
+					out << ", ";
+			}
+			out << ")";
+			end(out, indent);
 		}
+
+		void AddExpressions(const std::vector<ExpNode*>& exprs)
+		{
+			m_ExprList.insert(m_ExprList.end(), exprs.begin(), exprs.end());
+		}
+
+		LocNode* m_Loc;
+		std::vector<ExpNode*> m_ExprList;
 	};
 
 	class EhNode : public ExpNode
@@ -294,7 +378,11 @@ namespace a_lang
 		EhNode(const Position *p) : ExpNode(p)
 		{
 		}
-		void unparse(std::ostream &out, int indent) = 0;
+		void unparse(std::ostream &out, int indent)
+		{
+			begin(out, indent);
+			end(out, indent);
+		}
 	};
 
 	class FalseNode : public ExpNode
@@ -305,7 +393,9 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			strout(out, "false", 0);
+			end(out, indent);
 		}
 	};
 
@@ -317,23 +407,16 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			strout(out, std::to_string(m_Val), 0);
+			end(out, indent);
 		}
 
 	private:
 		int m_Val;
 	};
 
-	/** A memory location. LocNodes subclass ExpNode
-	 * because they can be used as part of an expression.
-	 **/
-	class LocNode : public ExpNode
-	{
-	public:
-		LocNode(const Position *p)
-			: ExpNode(p) {}
-		void unparse(std::ostream &out, int indent) = 0;
-	};
+
 
 	/** An identifier. Note that IDNodes subclass
 	 * LocNode because they are a type of memory location.
@@ -345,6 +428,7 @@ namespace a_lang
 			: LocNode(p), name(nameIn) {}
 		void unparse(std::ostream &out, int indent)
 		{
+
 			strout(out, name ,indent);
 		}
 
@@ -373,7 +457,9 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			out << m_Val;
+			end(out, indent);
 		}
 
 	private:
@@ -388,7 +474,9 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 			out << "true";
+			end(out, indent);
 		}
 	};
 
@@ -398,7 +486,11 @@ namespace a_lang
 		UnaryExpNode(const Position *p) : ExpNode(p)
 		{
 		}
-		void unparse(std::ostream &out, int indent) = 0;
+		void unparse(std::ostream &out, int indent)
+		{
+			begin(out, indent);
+			end(out, indent);
+		}
 
 		
 
@@ -412,7 +504,8 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
-
+			begin(out, indent);
+			end(out, indent);
 		}
 
 
@@ -427,7 +520,9 @@ namespace a_lang
 		}
 		void unparse(std::ostream &out, int indent)
 		{
+			begin(out, indent);
 
+			end(out, indent);
 		}
 	};
 
@@ -459,11 +554,9 @@ namespace a_lang
 			for (auto& child: m_Children)
 			{
 				child->unparse(out, indent);
+				if (child->myPos != nullptr)
+					out << ";\n";
 			}
-
-
-			if (m_UseSemicolon)
-				out << ";\n";
 		}
 
 		void AddChildren(const std::vector<StmtNode*> children)
@@ -485,15 +578,30 @@ namespace a_lang
 	class AssignStmtNode : public StmtNode
 	{
 	public:
-		AssignStmtNode(const Position *p) : StmtNode(p) {}
-		void unparse(std::ostream &out, int indent) override = 0;
+		AssignStmtNode(const Position *p, LocNode* loc, ExpNode* exp) : StmtNode(p), m_Loc(loc), m_Exp(exp) {}
+		void unparse(std::ostream &out, int indent) override
+		{
+			m_Loc->unparse(out, indent);
+			out << " = ";
+			m_Exp->unparse(out, 0);
+		}
+
+		LocNode* m_Loc;
+		ExpNode* m_Exp;
+		
+
 	};
 
 	class CallStmtNode : public StmtNode
 	{
 	public:
-		CallStmtNode(const Position *p) : StmtNode(p) {}
-		void unparse(std::ostream &out, int indent) override = 0;
+		CallStmtNode(const Position *p, ExpNode* callExp) : StmtNode(p), m_CallExp(callExp) {}
+		void unparse(std::ostream &out, int indent)
+		{
+			m_CallExp->unparse(out, indent);
+		}
+
+		ExpNode* m_CallExp;
 	};
 
 	/** \class DeclNode
@@ -503,8 +611,10 @@ namespace a_lang
 	class DeclNode : public StmtNode
 	{
 	public:
-		DeclNode(const Position *p) : StmtNode(p) {}
+		DeclNode(const Position *p) : StmtNode(p), m_PrintSemicolon(false) {}
 		void unparse(std::ostream &out, int indent) override = 0;
+
+		bool m_PrintSemicolon;
 	};
 	class TypeNode : public ASTNode
 	{
@@ -691,8 +801,14 @@ namespace a_lang
 		ReturnStmtNode(const Position *p, ExpNode* node) : StmtNode(p), m_Child(node) {}
 		void unparse(std::ostream &out, int indent) override
 		{
-			strout(out, "return ", indent);
-			m_Child->unparse(out, 0);
+			strout(out, "return", indent);
+			if (m_Child != nullptr)
+			{
+				out << " ";
+				m_Child->unparse(out, 0);
+			}
+
+				
 		}
 
 		ExpNode* m_Child;

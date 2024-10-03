@@ -204,10 +204,10 @@ Nonterminals, with rules where they appear
     exp <a_lang::ExpNode*> (65)
         on left: 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58
         on right: 8 31 32 33 35 39 41 42 44 45 46 47 48 49 50 51 52 53 54 55 56 61 62 69
-    callExp <a_lang::ExpNode*> (66)
+    callExp <a_lang::CallExpNode*> (66)
         on left: 59 60
         on right: 36 70
-    actualList (67)
+    actualList <std::vector<a_lang::ExpNode*>> (67)
         on left: 61 62
         on right: 60 62
     term <a_lang::ExpNode*> (68)
