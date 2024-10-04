@@ -133,6 +133,8 @@
 %type <a_lang::ExpNode*> term
 %type <a_lang::CallExpNode*> callExp
 %type <std::vector<a_lang::ExpNode*>> actualList
+%type <std::vector<a_lang::DeclNode*>> classBody
+%type <a_lang::ClassDeclNode*> classTypeDecl
 
 %right ASSIGN
 %left OR
@@ -174,6 +176,7 @@ decl		: varDecl SEMICOL
 		  }
 		| classTypeDecl
 		  {
+			$$ = $1;
 		  }
 		| fnDecl
 		  {
@@ -211,11 +214,12 @@ datatype	: REF primType
 		  }
 		| REF name
 		  {
-
+			auto classType = new ClassTypeNode($2->pos(), $2);
+			$$ = new RefTypeNode($1->pos(), classType);
 		  }
 		| name
 		  {
-			
+			$$ = new ClassTypeNode($1->pos(), $1);
 		  }
 
 primType	: INT
@@ -233,18 +237,28 @@ primType	: INT
 
 classTypeDecl 	: name COLON CUSTOM LCURLY classBody RCURLY SEMICOL
 		  {
+			$$ = new ClassDeclNode($1->pos(), $1);
+			$$->AddDecls($5);
+			
 		  }
 
 classBody 	: classBody varDecl SEMICOL
 		  {
-		  //TODO
+			$$ = std::vector<DeclNode*>();
+			$$.insert($$.end(), $1.begin(), $1.end());
+			$2->m_PrintSemicolon = true;
+			$$.push_back($2);
+
 		  }
 		| classBody fnDecl
 		  {
-		  //TODO
+			$$ = std::vector<DeclNode*>();
+			$$.insert($$.end(), $1.begin(), $1.end());
+			$$.push_back($2);
 		  }
 		| /* epsilon */
 		  {
+			$$ = {};
 		  }
 
 fnDecl 		: name COLON LPAREN maybeFormals RPAREN ARROW type LCURLY stmtList RCURLY
@@ -443,6 +457,7 @@ actualList	: exp
 
 term 		: loc
 		  {
+			$$ = $1;
 		  }
 		| INTLITERAL
 		  {

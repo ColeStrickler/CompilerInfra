@@ -38,15 +38,5 @@ void ProgramNode::unparse(std::ostream& out, int indent){
 	}
 }
 
-void VarDeclNode::unparse(std::ostream& out, int indent){
-	doIndent(out, indent);
-	this->myID->unparse(out, 0);
-	out << ": ";
-	this->myType->unparse(out, 0);
-	if (m_PrintSemicolon)
-		out << ";\n";
-
-}
-
 
 } // End namespace a_lang

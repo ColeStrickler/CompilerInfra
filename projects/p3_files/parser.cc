@@ -169,6 +169,10 @@ namespace a_lang {
         value.copy< a_lang::CallExpNode* > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_classTypeDecl: // classTypeDecl
+        value.copy< a_lang::ClassDeclNode* > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_decl: // decl
         value.copy< a_lang::DeclNode* > (YY_MOVE (that.value));
         break;
@@ -277,6 +281,7 @@ namespace a_lang {
         value.copy< std::list<a_lang::DeclNode*>* > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_classBody: // classBody
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.copy< std::vector<a_lang::DeclNode*> > (YY_MOVE (that.value));
@@ -319,6 +324,10 @@ namespace a_lang {
     {
       case symbol_kind::S_callExp: // callExp
         value.move< a_lang::CallExpNode* > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_classTypeDecl: // classTypeDecl
+        value.move< a_lang::ClassDeclNode* > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_decl: // decl
@@ -429,6 +438,7 @@ namespace a_lang {
         value.move< std::list<a_lang::DeclNode*>* > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_classBody: // classBody
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.move< std::vector<a_lang::DeclNode*> > (YY_MOVE (s.value));
@@ -542,6 +552,10 @@ namespace a_lang {
         value.YY_MOVE_OR_COPY< a_lang::CallExpNode* > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_classTypeDecl: // classTypeDecl
+        value.YY_MOVE_OR_COPY< a_lang::ClassDeclNode* > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_decl: // decl
         value.YY_MOVE_OR_COPY< a_lang::DeclNode* > (YY_MOVE (that.value));
         break;
@@ -650,6 +664,7 @@ namespace a_lang {
         value.YY_MOVE_OR_COPY< std::list<a_lang::DeclNode*>* > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_classBody: // classBody
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.YY_MOVE_OR_COPY< std::vector<a_lang::DeclNode*> > (YY_MOVE (that.value));
@@ -676,6 +691,10 @@ namespace a_lang {
     {
       case symbol_kind::S_callExp: // callExp
         value.move< a_lang::CallExpNode* > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_classTypeDecl: // classTypeDecl
+        value.move< a_lang::ClassDeclNode* > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_decl: // decl
@@ -786,6 +805,7 @@ namespace a_lang {
         value.move< std::list<a_lang::DeclNode*>* > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_classBody: // classBody
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.move< std::vector<a_lang::DeclNode*> > (YY_MOVE (that.value));
@@ -812,6 +832,10 @@ namespace a_lang {
     {
       case symbol_kind::S_callExp: // callExp
         value.copy< a_lang::CallExpNode* > (that.value);
+        break;
+
+      case symbol_kind::S_classTypeDecl: // classTypeDecl
+        value.copy< a_lang::ClassDeclNode* > (that.value);
         break;
 
       case symbol_kind::S_decl: // decl
@@ -922,6 +946,7 @@ namespace a_lang {
         value.copy< std::list<a_lang::DeclNode*>* > (that.value);
         break;
 
+      case symbol_kind::S_classBody: // classBody
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.copy< std::vector<a_lang::DeclNode*> > (that.value);
@@ -946,6 +971,10 @@ namespace a_lang {
     {
       case symbol_kind::S_callExp: // callExp
         value.move< a_lang::CallExpNode* > (that.value);
+        break;
+
+      case symbol_kind::S_classTypeDecl: // classTypeDecl
+        value.move< a_lang::ClassDeclNode* > (that.value);
         break;
 
       case symbol_kind::S_decl: // decl
@@ -1056,6 +1085,7 @@ namespace a_lang {
         value.move< std::list<a_lang::DeclNode*>* > (that.value);
         break;
 
+      case symbol_kind::S_classBody: // classBody
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         value.move< std::vector<a_lang::DeclNode*> > (that.value);
@@ -1322,6 +1352,10 @@ namespace a_lang {
         yylhs.value.emplace< a_lang::CallExpNode* > ();
         break;
 
+      case symbol_kind::S_classTypeDecl: // classTypeDecl
+        yylhs.value.emplace< a_lang::ClassDeclNode* > ();
+        break;
+
       case symbol_kind::S_decl: // decl
         yylhs.value.emplace< a_lang::DeclNode* > ();
         break;
@@ -1430,6 +1464,7 @@ namespace a_lang {
         yylhs.value.emplace< std::list<a_lang::DeclNode*>* > ();
         break;
 
+      case symbol_kind::S_classBody: // classBody
       case symbol_kind::S_maybeFormals: // maybeFormals
       case symbol_kind::S_formalList: // formalList
         yylhs.value.emplace< std::vector<a_lang::DeclNode*> > ();
@@ -1454,240 +1489,252 @@ namespace a_lang {
           switch (yyn)
             {
   case 2: // program: globals
-#line 154 "a.yy"
+#line 156 "a.yy"
                   {
 		  yylhs.value.as < a_lang::ProgramNode * > () = new ProgramNode(yystack_[0].value.as < std::list<a_lang::DeclNode*>* > ());
 		  *root = yylhs.value.as < a_lang::ProgramNode * > ();
 		  }
-#line 1463 "parser.cc"
+#line 1498 "parser.cc"
     break;
 
   case 3: // globals: globals decl
-#line 160 "a.yy"
+#line 162 "a.yy"
                   {
 		  yylhs.value.as < std::list<a_lang::DeclNode*>* > () = yystack_[1].value.as < std::list<a_lang::DeclNode*>* > ();
 		  DeclNode * declNode = yystack_[0].value.as < a_lang::DeclNode* > ();
 		  yylhs.value.as < std::list<a_lang::DeclNode*>* > ()->push_back(declNode);
 		  }
-#line 1473 "parser.cc"
+#line 1508 "parser.cc"
     break;
 
   case 4: // globals: %empty
-#line 166 "a.yy"
+#line 168 "a.yy"
                   {
 		  yylhs.value.as < std::list<a_lang::DeclNode*>* > () = new std::list<DeclNode *>();
 		  }
-#line 1481 "parser.cc"
+#line 1516 "parser.cc"
     break;
 
   case 5: // decl: varDecl SEMICOL
-#line 171 "a.yy"
+#line 173 "a.yy"
                   {
 		  	yylhs.value.as < a_lang::DeclNode* > () = yystack_[1].value.as < a_lang::VarDeclNode* > ();
 			yystack_[1].value.as < a_lang::VarDeclNode* > ()->m_PrintSemicolon = true;
 		  }
-#line 1490 "parser.cc"
+#line 1525 "parser.cc"
     break;
 
   case 6: // decl: classTypeDecl
-#line 176 "a.yy"
+#line 178 "a.yy"
                   {
+			yylhs.value.as < a_lang::DeclNode* > () = yystack_[0].value.as < a_lang::ClassDeclNode* > ();
 		  }
-#line 1497 "parser.cc"
+#line 1533 "parser.cc"
     break;
 
   case 7: // decl: fnDecl
-#line 179 "a.yy"
+#line 182 "a.yy"
                   {
 			yylhs.value.as < a_lang::DeclNode* > () = yystack_[0].value.as < a_lang::FnDeclNode* > ();
 		  }
-#line 1505 "parser.cc"
+#line 1541 "parser.cc"
     break;
 
   case 8: // varDecl: name COLON type
-#line 184 "a.yy"
+#line 187 "a.yy"
                   {
 		  const Position * p;
 		  p = new Position(yystack_[2].value.as < a_lang::IDNode* > ()->pos(), yystack_[1].value.as < a_lang::Token * > ()->pos());
 		  yylhs.value.as < a_lang::VarDeclNode* > () = new VarDeclNode(p, yystack_[2].value.as < a_lang::IDNode* > (), yystack_[0].value.as < a_lang::TypeNode* > ());
 		  }
-#line 1515 "parser.cc"
+#line 1551 "parser.cc"
     break;
 
   case 9: // varDecl: name COLON type ASSIGN exp
-#line 190 "a.yy"
+#line 193 "a.yy"
                   {
 		  }
-#line 1522 "parser.cc"
+#line 1558 "parser.cc"
     break;
 
   case 10: // type: IMMUTABLE datatype
-#line 194 "a.yy"
+#line 197 "a.yy"
                   {
 			const Position * p;
 		  	p = new Position(yystack_[1].value.as < a_lang::Token * > ()->pos(), yystack_[0].value.as < a_lang::TypeNode* > ()->pos());
 			yylhs.value.as < a_lang::TypeNode* > () = new ImmutableTypeNode(p, yystack_[0].value.as < a_lang::TypeNode* > ());
 		  }
-#line 1532 "parser.cc"
+#line 1568 "parser.cc"
     break;
 
   case 11: // type: datatype
-#line 200 "a.yy"
+#line 203 "a.yy"
                   {
 		  yylhs.value.as < a_lang::TypeNode* > () = yystack_[0].value.as < a_lang::TypeNode* > ();
 		  }
-#line 1540 "parser.cc"
+#line 1576 "parser.cc"
     break;
 
   case 12: // datatype: REF primType
-#line 205 "a.yy"
+#line 208 "a.yy"
                   {
 			yylhs.value.as < a_lang::TypeNode* > () = new RefTypeNode(yystack_[1].value.as < a_lang::Token * > ()->pos(), yystack_[0].value.as < a_lang::TypeNode* > ());
 		  }
-#line 1548 "parser.cc"
+#line 1584 "parser.cc"
     break;
 
   case 13: // datatype: primType
-#line 209 "a.yy"
+#line 212 "a.yy"
                   {
 		  yylhs.value.as < a_lang::TypeNode* > () = yystack_[0].value.as < a_lang::TypeNode* > ();
 		  }
-#line 1556 "parser.cc"
+#line 1592 "parser.cc"
     break;
 
   case 14: // datatype: REF name
-#line 213 "a.yy"
+#line 216 "a.yy"
                   {
-
+			auto classType = new ClassTypeNode(yystack_[0].value.as < a_lang::IDNode* > ()->pos(), yystack_[0].value.as < a_lang::IDNode* > ());
+			yylhs.value.as < a_lang::TypeNode* > () = new RefTypeNode(yystack_[1].value.as < a_lang::Token * > ()->pos(), classType);
 		  }
-#line 1564 "parser.cc"
+#line 1601 "parser.cc"
     break;
 
   case 15: // datatype: name
-#line 217 "a.yy"
+#line 221 "a.yy"
                   {
-			
+			yylhs.value.as < a_lang::TypeNode* > () = new ClassTypeNode(yystack_[0].value.as < a_lang::IDNode* > ()->pos(), yystack_[0].value.as < a_lang::IDNode* > ());
 		  }
-#line 1572 "parser.cc"
+#line 1609 "parser.cc"
     break;
 
   case 16: // primType: INT
-#line 222 "a.yy"
+#line 226 "a.yy"
                   {
 		  yylhs.value.as < a_lang::TypeNode* > () = new IntTypeNode(yystack_[0].value.as < a_lang::Token * > ()->pos());
 		  }
-#line 1580 "parser.cc"
+#line 1617 "parser.cc"
     break;
 
   case 17: // primType: BOOL
-#line 226 "a.yy"
+#line 230 "a.yy"
                   {
 			yylhs.value.as < a_lang::TypeNode* > () = new BoolTypeNode(yystack_[0].value.as < a_lang::Token * > ()->pos());
 		  }
-#line 1588 "parser.cc"
+#line 1625 "parser.cc"
     break;
 
   case 18: // primType: VOID
-#line 230 "a.yy"
+#line 234 "a.yy"
                   {
 			yylhs.value.as < a_lang::TypeNode* > () = new VoidTypeNode(yystack_[0].value.as < a_lang::Token * > ()->pos());
 		  }
-#line 1596 "parser.cc"
+#line 1633 "parser.cc"
     break;
 
   case 19: // classTypeDecl: name COLON CUSTOM LCURLY classBody RCURLY SEMICOL
-#line 235 "a.yy"
+#line 239 "a.yy"
                   {
+			yylhs.value.as < a_lang::ClassDeclNode* > () = new ClassDeclNode(yystack_[6].value.as < a_lang::IDNode* > ()->pos(), yystack_[6].value.as < a_lang::IDNode* > ());
+			yylhs.value.as < a_lang::ClassDeclNode* > ()->AddDecls(yystack_[2].value.as < std::vector<a_lang::DeclNode*> > ());
+			
 		  }
-#line 1603 "parser.cc"
+#line 1643 "parser.cc"
     break;
 
   case 20: // classBody: classBody varDecl SEMICOL
-#line 239 "a.yy"
+#line 246 "a.yy"
                   {
-		  //TODO
+			yylhs.value.as < std::vector<a_lang::DeclNode*> > () = std::vector<DeclNode*>();
+			yylhs.value.as < std::vector<a_lang::DeclNode*> > ().insert(yylhs.value.as < std::vector<a_lang::DeclNode*> > ().end(), yystack_[2].value.as < std::vector<a_lang::DeclNode*> > ().begin(), yystack_[2].value.as < std::vector<a_lang::DeclNode*> > ().end());
+			yystack_[1].value.as < a_lang::VarDeclNode* > ()->m_PrintSemicolon = true;
+			yylhs.value.as < std::vector<a_lang::DeclNode*> > ().push_back(yystack_[1].value.as < a_lang::VarDeclNode* > ());
+
 		  }
-#line 1611 "parser.cc"
+#line 1655 "parser.cc"
     break;
 
   case 21: // classBody: classBody fnDecl
-#line 243 "a.yy"
+#line 254 "a.yy"
                   {
-		  //TODO
+			yylhs.value.as < std::vector<a_lang::DeclNode*> > () = std::vector<DeclNode*>();
+			yylhs.value.as < std::vector<a_lang::DeclNode*> > ().insert(yylhs.value.as < std::vector<a_lang::DeclNode*> > ().end(), yystack_[1].value.as < std::vector<a_lang::DeclNode*> > ().begin(), yystack_[1].value.as < std::vector<a_lang::DeclNode*> > ().end());
+			yylhs.value.as < std::vector<a_lang::DeclNode*> > ().push_back(yystack_[0].value.as < a_lang::FnDeclNode* > ());
 		  }
-#line 1619 "parser.cc"
+#line 1665 "parser.cc"
     break;
 
   case 22: // classBody: %empty
-#line 247 "a.yy"
+#line 260 "a.yy"
                   {
+			yylhs.value.as < std::vector<a_lang::DeclNode*> > () = {};
 		  }
-#line 1626 "parser.cc"
+#line 1673 "parser.cc"
     break;
 
   case 23: // fnDecl: name COLON LPAREN maybeFormals RPAREN ARROW type LCURLY stmtList RCURLY
-#line 251 "a.yy"
+#line 265 "a.yy"
                   {
 			yylhs.value.as < a_lang::FnDeclNode* > () = new FnDeclNode(yystack_[9].value.as < a_lang::IDNode* > ()->pos(), yystack_[9].value.as < a_lang::IDNode* > (), yystack_[3].value.as < a_lang::TypeNode* > ());
 			yylhs.value.as < a_lang::FnDeclNode* > ()->AddFormals(yystack_[6].value.as < std::vector<a_lang::DeclNode*> > ());
 			yylhs.value.as < a_lang::FnDeclNode* > ()->AddStatements(yystack_[1].value.as < a_lang::StmtListNode* > ());
 		  }
-#line 1636 "parser.cc"
+#line 1683 "parser.cc"
     break;
 
   case 24: // maybeFormals: %empty
-#line 258 "a.yy"
+#line 272 "a.yy"
                   {
 			yylhs.value.as < std::vector<a_lang::DeclNode*> > () = {};
 		  }
-#line 1644 "parser.cc"
+#line 1691 "parser.cc"
     break;
 
   case 25: // maybeFormals: formalList
-#line 262 "a.yy"
+#line 276 "a.yy"
                   {
 			yylhs.value.as < std::vector<a_lang::DeclNode*> > () = yystack_[0].value.as < std::vector<a_lang::DeclNode*> > ();
 		  }
-#line 1652 "parser.cc"
+#line 1699 "parser.cc"
     break;
 
   case 26: // formalList: formalDecl
-#line 267 "a.yy"
+#line 281 "a.yy"
                   {
 			yylhs.value.as < std::vector<a_lang::DeclNode*> > () = std::vector<DeclNode*>();
 			yylhs.value.as < std::vector<a_lang::DeclNode*> > ().push_back(yystack_[0].value.as < a_lang::FormalDeclNode* > ());
 		  }
-#line 1661 "parser.cc"
+#line 1708 "parser.cc"
     break;
 
   case 27: // formalList: formalList COMMA formalDecl
-#line 272 "a.yy"
+#line 286 "a.yy"
                   {
 			yylhs.value.as < std::vector<a_lang::DeclNode*> > () = std::vector<DeclNode*>();
 			yylhs.value.as < std::vector<a_lang::DeclNode*> > ().insert(yylhs.value.as < std::vector<a_lang::DeclNode*> > ().end(), yystack_[2].value.as < std::vector<a_lang::DeclNode*> > ().begin(), yystack_[2].value.as < std::vector<a_lang::DeclNode*> > ().end());
 			yylhs.value.as < std::vector<a_lang::DeclNode*> > ().push_back(yystack_[0].value.as < a_lang::FormalDeclNode* > ());
 		  }
-#line 1671 "parser.cc"
+#line 1718 "parser.cc"
     break;
 
   case 28: // formalDecl: name COLON type
-#line 279 "a.yy"
+#line 293 "a.yy"
                   {
 			yylhs.value.as < a_lang::FormalDeclNode* > () = new FormalDeclNode(yystack_[2].value.as < a_lang::IDNode* > ()->pos(), yystack_[2].value.as < a_lang::IDNode* > (), yystack_[0].value.as < a_lang::TypeNode* > ());
 		  }
-#line 1679 "parser.cc"
+#line 1726 "parser.cc"
     break;
 
   case 29: // stmtList: %empty
-#line 284 "a.yy"
+#line 298 "a.yy"
                   {
 			yylhs.value.as < a_lang::StmtListNode* > () = new StmtListNode(nullptr, false);
 		  }
-#line 1687 "parser.cc"
+#line 1734 "parser.cc"
     break;
 
   case 30: // stmtList: stmtList stmt SEMICOL
-#line 288 "a.yy"
+#line 302 "a.yy"
                   {
 			auto pos = yystack_[2].value.as < a_lang::StmtListNode* > ()->pos() == nullptr ? yystack_[1].value.as < a_lang::StmtNode* > ()->pos() : yystack_[2].value.as < a_lang::StmtListNode* > ()->pos();
 			yylhs.value.as < a_lang::StmtListNode* > () = new StmtListNode(pos, true);
@@ -1695,375 +1742,376 @@ namespace a_lang {
 			yylhs.value.as < a_lang::StmtListNode* > ()->AddChildren(yystack_[2].value.as < a_lang::StmtListNode* > ()->m_Children);
 			yylhs.value.as < a_lang::StmtListNode* > ()->AddChild(yystack_[1].value.as < a_lang::StmtNode* > ());
 		  }
-#line 1699 "parser.cc"
+#line 1746 "parser.cc"
     break;
 
   case 31: // stmtList: stmtList blockStmt
-#line 296 "a.yy"
+#line 310 "a.yy"
                   {
 		  }
-#line 1706 "parser.cc"
+#line 1753 "parser.cc"
     break;
 
   case 32: // blockStmt: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
-#line 300 "a.yy"
+#line 314 "a.yy"
                   {
 		  }
-#line 1713 "parser.cc"
+#line 1760 "parser.cc"
     break;
 
   case 33: // blockStmt: IF LPAREN exp RPAREN LCURLY stmtList RCURLY
-#line 303 "a.yy"
+#line 317 "a.yy"
                   {
 		  }
-#line 1720 "parser.cc"
+#line 1767 "parser.cc"
     break;
 
   case 34: // blockStmt: IF LPAREN exp RPAREN LCURLY stmtList RCURLY ELSE LCURLY stmtList RCURLY
-#line 306 "a.yy"
+#line 320 "a.yy"
                   {
 		  }
-#line 1727 "parser.cc"
+#line 1774 "parser.cc"
     break;
 
   case 35: // stmt: varDecl
-#line 310 "a.yy"
+#line 324 "a.yy"
                   {
 			yylhs.value.as < a_lang::StmtNode* > () = yystack_[0].value.as < a_lang::VarDeclNode* > ();
 		  }
-#line 1735 "parser.cc"
+#line 1782 "parser.cc"
     break;
 
   case 36: // stmt: loc ASSIGN exp
-#line 314 "a.yy"
+#line 328 "a.yy"
                   {
 			printf("returning assignstmtnode\n");
 			yylhs.value.as < a_lang::StmtNode* > () = new AssignStmtNode(yystack_[2].value.as < a_lang::LocNode* > ()->pos(), yystack_[2].value.as < a_lang::LocNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1744 "parser.cc"
+#line 1791 "parser.cc"
     break;
 
   case 37: // stmt: callExp
-#line 319 "a.yy"
+#line 333 "a.yy"
                   {
 			yylhs.value.as < a_lang::StmtNode* > () = new CallStmtNode(yystack_[0].value.as < a_lang::CallExpNode* > ()->pos(), yystack_[0].value.as < a_lang::CallExpNode* > ());
 		  }
-#line 1752 "parser.cc"
+#line 1799 "parser.cc"
     break;
 
   case 38: // stmt: loc POSTDEC
-#line 323 "a.yy"
+#line 337 "a.yy"
                   {
 		  }
-#line 1759 "parser.cc"
+#line 1806 "parser.cc"
     break;
 
   case 39: // stmt: loc POSTINC
-#line 326 "a.yy"
+#line 340 "a.yy"
                   {
 		  }
-#line 1766 "parser.cc"
+#line 1813 "parser.cc"
     break;
 
   case 40: // stmt: TOCONSOLE exp
-#line 329 "a.yy"
+#line 343 "a.yy"
                   {
 		  }
-#line 1773 "parser.cc"
+#line 1820 "parser.cc"
     break;
 
   case 41: // stmt: FROMCONSOLE loc
-#line 332 "a.yy"
+#line 346 "a.yy"
                   {
 		  }
-#line 1780 "parser.cc"
+#line 1827 "parser.cc"
     break;
 
   case 42: // stmt: MAYBE exp MEANS exp OTHERWISE exp
-#line 335 "a.yy"
+#line 349 "a.yy"
                   {
 		  }
-#line 1787 "parser.cc"
+#line 1834 "parser.cc"
     break;
 
   case 43: // stmt: RETURN exp
-#line 338 "a.yy"
+#line 352 "a.yy"
                   {
 			yylhs.value.as < a_lang::StmtNode* > () = new ReturnStmtNode(yystack_[1].value.as < a_lang::Token * > ()->pos(), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1795 "parser.cc"
+#line 1842 "parser.cc"
     break;
 
   case 44: // stmt: RETURN
-#line 342 "a.yy"
+#line 356 "a.yy"
                   {
 			yylhs.value.as < a_lang::StmtNode* > () = new ReturnStmtNode(yystack_[0].value.as < a_lang::Token * > ()->pos(), nullptr);
 		  }
-#line 1803 "parser.cc"
+#line 1850 "parser.cc"
     break;
 
   case 45: // exp: exp DASH exp
-#line 348 "a.yy"
+#line 362 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new MinusNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1812 "parser.cc"
+#line 1859 "parser.cc"
     break;
 
   case 46: // exp: exp CROSS exp
-#line 353 "a.yy"
+#line 367 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new PlusNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1821 "parser.cc"
+#line 1868 "parser.cc"
     break;
 
   case 47: // exp: exp STAR exp
-#line 358 "a.yy"
+#line 372 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new TimesNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1830 "parser.cc"
+#line 1877 "parser.cc"
     break;
 
   case 48: // exp: exp SLASH exp
-#line 363 "a.yy"
+#line 377 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new DivideNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1839 "parser.cc"
+#line 1886 "parser.cc"
     break;
 
   case 49: // exp: exp AND exp
-#line 368 "a.yy"
+#line 382 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new AndNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1848 "parser.cc"
+#line 1895 "parser.cc"
     break;
 
   case 50: // exp: exp OR exp
-#line 373 "a.yy"
+#line 387 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new OrNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1857 "parser.cc"
+#line 1904 "parser.cc"
     break;
 
   case 51: // exp: exp EQUALS exp
-#line 378 "a.yy"
+#line 392 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new EqualsNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1866 "parser.cc"
+#line 1913 "parser.cc"
     break;
 
   case 52: // exp: exp NOTEQUALS exp
-#line 383 "a.yy"
+#line 397 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new NotNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1875 "parser.cc"
+#line 1922 "parser.cc"
     break;
 
   case 53: // exp: exp GREATER exp
-#line 388 "a.yy"
+#line 402 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new GreaterNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1884 "parser.cc"
+#line 1931 "parser.cc"
     break;
 
   case 54: // exp: exp GREATEREQ exp
-#line 393 "a.yy"
+#line 407 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new GreaterEqNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1893 "parser.cc"
+#line 1940 "parser.cc"
     break;
 
   case 55: // exp: exp LESS exp
-#line 398 "a.yy"
+#line 412 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new LessNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1902 "parser.cc"
+#line 1949 "parser.cc"
     break;
 
   case 56: // exp: exp LESSEQ exp
-#line 403 "a.yy"
+#line 417 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new LessEqNode(yystack_[2].value.as < a_lang::ExpNode* > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddExpressions(yystack_[2].value.as < a_lang::ExpNode* > (), yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1911 "parser.cc"
+#line 1958 "parser.cc"
     break;
 
   case 57: // exp: NOT exp
-#line 408 "a.yy"
+#line 422 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new NotNode(yystack_[1].value.as < a_lang::Token * > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddChild(yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1920 "parser.cc"
+#line 1967 "parser.cc"
     break;
 
   case 58: // exp: DASH term
-#line 413 "a.yy"
+#line 427 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new NegationNode(yystack_[1].value.as < a_lang::Token * > ()->pos());
 			yylhs.value.as < a_lang::ExpNode* > ()->AddChild(yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1929 "parser.cc"
+#line 1976 "parser.cc"
     break;
 
   case 59: // exp: term
-#line 418 "a.yy"
+#line 432 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = yystack_[0].value.as < a_lang::ExpNode* > ();
 			printf("returning term\n");
 		  }
-#line 1938 "parser.cc"
+#line 1985 "parser.cc"
     break;
 
   case 60: // callExp: loc LPAREN RPAREN
-#line 424 "a.yy"
+#line 438 "a.yy"
                   {
 			yylhs.value.as < a_lang::CallExpNode* > () = new CallExpNode(yystack_[2].value.as < a_lang::LocNode* > ()->pos(), yystack_[2].value.as < a_lang::LocNode* > ());
 		  }
-#line 1946 "parser.cc"
+#line 1993 "parser.cc"
     break;
 
   case 61: // callExp: loc LPAREN actualList RPAREN
-#line 428 "a.yy"
+#line 442 "a.yy"
                   {
 			yylhs.value.as < a_lang::CallExpNode* > () = new CallExpNode(yystack_[3].value.as < a_lang::LocNode* > ()->pos(), yystack_[3].value.as < a_lang::LocNode* > ());
 			yylhs.value.as < a_lang::CallExpNode* > ()->AddExpressions(yystack_[1].value.as < std::vector<a_lang::ExpNode*> > ());
 		  }
-#line 1955 "parser.cc"
+#line 2002 "parser.cc"
     break;
 
   case 62: // actualList: exp
-#line 434 "a.yy"
+#line 448 "a.yy"
                   {
 			yylhs.value.as < std::vector<a_lang::ExpNode*> > () = {yystack_[0].value.as < a_lang::ExpNode* > ()};
 		  }
-#line 1963 "parser.cc"
+#line 2010 "parser.cc"
     break;
 
   case 63: // actualList: actualList COMMA exp
-#line 438 "a.yy"
+#line 452 "a.yy"
                   {
 			yylhs.value.as < std::vector<a_lang::ExpNode*> > () = std::vector<ExpNode*>();
 			yylhs.value.as < std::vector<a_lang::ExpNode*> > ().insert(yylhs.value.as < std::vector<a_lang::ExpNode*> > ().end(), yystack_[2].value.as < std::vector<a_lang::ExpNode*> > ().begin(), yystack_[2].value.as < std::vector<a_lang::ExpNode*> > ().end());
 			yylhs.value.as < std::vector<a_lang::ExpNode*> > ().push_back(yystack_[0].value.as < a_lang::ExpNode* > ());
 		  }
-#line 1973 "parser.cc"
+#line 2020 "parser.cc"
     break;
 
   case 64: // term: loc
-#line 445 "a.yy"
+#line 459 "a.yy"
                   {
+			yylhs.value.as < a_lang::ExpNode* > () = yystack_[0].value.as < a_lang::LocNode* > ();
 		  }
-#line 1980 "parser.cc"
+#line 2028 "parser.cc"
     break;
 
   case 65: // term: INTLITERAL
-#line 448 "a.yy"
+#line 463 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new IntLitNode(yystack_[0].value.as < a_lang::IntLitToken * > ()->pos(), yystack_[0].value.as < a_lang::IntLitToken * > ()->num());
 		  }
-#line 1988 "parser.cc"
+#line 2036 "parser.cc"
     break;
 
   case 66: // term: STRINGLITERAL
-#line 452 "a.yy"
+#line 467 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new StrLitNode(yystack_[0].value.as < a_lang::StrToken * > ()->pos(), yystack_[0].value.as < a_lang::StrToken * > ()->str());
 		  }
-#line 1996 "parser.cc"
+#line 2044 "parser.cc"
     break;
 
   case 67: // term: TRUE
-#line 456 "a.yy"
+#line 471 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new TrueNode(yystack_[0].value.as < a_lang::Token * > ()->pos());
 		  }
-#line 2004 "parser.cc"
+#line 2052 "parser.cc"
     break;
 
   case 68: // term: FALSE
-#line 460 "a.yy"
+#line 475 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = new FalseNode(yystack_[0].value.as < a_lang::Token * > ()->pos());
 		  }
-#line 2012 "parser.cc"
+#line 2060 "parser.cc"
     break;
 
   case 69: // term: EH
-#line 464 "a.yy"
+#line 479 "a.yy"
                   {
 		  }
-#line 2019 "parser.cc"
+#line 2067 "parser.cc"
     break;
 
   case 70: // term: LPAREN exp RPAREN
-#line 467 "a.yy"
+#line 482 "a.yy"
                   {
 			printf("LPAREN exp RPAREN\n");
 			yylhs.value.as < a_lang::ExpNode* > () = yystack_[1].value.as < a_lang::ExpNode* > ();
 			yylhs.value.as < a_lang::ExpNode* > ()->m_InsideParentheses = true;
 		  }
-#line 2029 "parser.cc"
+#line 2077 "parser.cc"
     break;
 
   case 71: // term: callExp
-#line 473 "a.yy"
+#line 488 "a.yy"
                   {
 			yylhs.value.as < a_lang::ExpNode* > () = yystack_[0].value.as < a_lang::CallExpNode* > ();
 		  }
-#line 2037 "parser.cc"
+#line 2085 "parser.cc"
     break;
 
   case 72: // loc: name
-#line 478 "a.yy"
+#line 493 "a.yy"
                   {
 			yylhs.value.as < a_lang::LocNode* > () = new LocNode(yystack_[0].value.as < a_lang::IDNode* > ()->pos(), yystack_[0].value.as < a_lang::IDNode* > (), nullptr);
 		  }
-#line 2045 "parser.cc"
+#line 2093 "parser.cc"
     break;
 
   case 73: // loc: loc ARROW name
-#line 482 "a.yy"
+#line 497 "a.yy"
                   {
 			yylhs.value.as < a_lang::LocNode* > () = new LocNode(yystack_[2].value.as < a_lang::LocNode* > ()->pos(), yystack_[2].value.as < a_lang::LocNode* > (), yystack_[0].value.as < a_lang::IDNode* > ());
 		  }
-#line 2053 "parser.cc"
+#line 2101 "parser.cc"
     break;
 
   case 74: // name: ID
-#line 487 "a.yy"
+#line 502 "a.yy"
                   {
 				
                 const Position * pos = yystack_[0].value.as < a_lang::IDToken * > ()->pos();
 	 	  		yylhs.value.as < a_lang::IDNode* > () = new IDNode(pos, yystack_[0].value.as < a_lang::IDToken * > ()->value());
 		  }
-#line 2063 "parser.cc"
+#line 2111 "parser.cc"
     break;
 
 
-#line 2067 "parser.cc"
+#line 2115 "parser.cc"
 
             default:
               break;
@@ -2645,14 +2693,14 @@ namespace a_lang {
   const short
   Parser::yyrline_[] =
   {
-       0,   153,   153,   159,   166,   170,   175,   178,   183,   189,
-     193,   199,   204,   208,   212,   216,   221,   225,   229,   234,
-     238,   242,   247,   250,   258,   261,   266,   271,   278,   284,
-     287,   295,   299,   302,   305,   309,   313,   318,   322,   325,
-     328,   331,   334,   337,   341,   347,   352,   357,   362,   367,
-     372,   377,   382,   387,   392,   397,   402,   407,   412,   417,
-     423,   427,   433,   437,   444,   447,   451,   455,   459,   463,
-     466,   472,   477,   481,   486
+       0,   155,   155,   161,   168,   172,   177,   181,   186,   192,
+     196,   202,   207,   211,   215,   220,   225,   229,   233,   238,
+     245,   253,   260,   264,   272,   275,   280,   285,   292,   298,
+     301,   309,   313,   316,   319,   323,   327,   332,   336,   339,
+     342,   345,   348,   351,   355,   361,   366,   371,   376,   381,
+     386,   391,   396,   401,   406,   411,   416,   421,   426,   431,
+     437,   441,   447,   451,   458,   462,   466,   470,   474,   478,
+     481,   487,   492,   496,   501
   };
 
   void
@@ -2736,9 +2784,9 @@ namespace a_lang {
 
 #line 5 "a.yy"
 } // a_lang
-#line 2740 "parser.cc"
+#line 2788 "parser.cc"
 
-#line 493 "a.yy"
+#line 508 "a.yy"
 
 
 void a_lang::Parser::error(const std::string& msg){

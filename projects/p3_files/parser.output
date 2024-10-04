@@ -174,10 +174,10 @@ Nonterminals, with rules where they appear
     primType <a_lang::TypeNode*> (55)
         on left: 15 16 17
         on right: 11 12
-    classTypeDecl (56)
+    classTypeDecl <a_lang::ClassDeclNode*> (56)
         on left: 18
         on right: 5
-    classBody (57)
+    classBody <std::vector<a_lang::DeclNode*>> (57)
         on left: 19 20 21
         on right: 18 19 20
     fnDecl <a_lang::FnDeclNode*> (58)

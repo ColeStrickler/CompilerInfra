@@ -640,7 +640,15 @@ namespace a_lang
 			assert(myType != nullptr);
 			assert(myID != nullptr);
 		}
-		void unparse(std::ostream &out, int indent);
+		void unparse(std::ostream &out, int indent)
+		{
+			doIndent(out, indent);
+			this->myID->unparse(out, 0);
+			out << ": ";
+			this->myType->unparse(out, 0);
+			if (m_PrintSemicolon)
+				out << ";\n";
+		}
 
 	private:
 		IDNode *myID;
@@ -694,7 +702,7 @@ namespace a_lang
 			myType->unparse(out, 0);
 			out << " {\n";
 			m_StmtList->unparse(out, indent+1);
-			out << "}\n";
+			strout(out, "}\n", indent);
 
 		}
 		void AddStatements(StmtListNode* stmtList)
@@ -709,18 +717,36 @@ namespace a_lang
 		std::vector<DeclNode *> m_Formals;
 	};
 
-	class ClassDefnNode : public DeclNode
+	class ClassDeclNode : public DeclNode
 	{
 	public:
-		ClassDefnNode(const Position *p, IDNode *inID, TypeNode *inType)
-			: DeclNode(p), myID(inID), myType(inType)
+		ClassDeclNode(const Position *p, IDNode *inID)
+			: DeclNode(p), myID(inID)
 		{
-			assert(myType != nullptr);
-			assert(myID != nullptr);
+
 		}
-		void unparse(std::ostream &out, int indent);
+
+		void AddDecl(DeclNode* decl)
+		{
+			m_Body.push_back(decl);
+		}
+
+		void AddDecls(const std::vector<DeclNode*>& decl)
+		{
+			m_Body.insert(m_Body.end(), decl.begin(), decl.end());
+		}
+
+		void unparse(std::ostream &out, int indent)
+		{
+			myID->unparse(out, indent);
+			out << " : custom {\n";
+			for (auto& d: m_Body)
+				d->unparse(out, indent+1);
+			out << "};\n";
+		}
 
 	private:
+		std::vector<DeclNode*> m_Body;
 		IDNode *myID;
 		TypeNode *myType;
 	};
@@ -867,11 +893,13 @@ namespace a_lang
 	class ClassTypeNode : public TypeNode
 	{
 	public:
-		ClassTypeNode(const Position *p) : TypeNode(p) {}
+		ClassTypeNode(const Position *p, IDNode* id) : TypeNode(p) {}
 		void unparse(std::ostream &out, int indent)
 		{
 			strout(out, "class", indent);
 		}
+
+		IDNode* m_ID;
 	};
 
 	class ImmutableTypeNode : public TypeNode
