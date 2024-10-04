@@ -127,6 +127,7 @@
 %type <a_lang::FormalDeclNode*> formalDecl
 %type <a_lang::StmtListNode*> stmtList
 %type <a_lang::StmtNode*> stmt
+%type <a_lang::StmtNode*> blockStmt
 %type <a_lang::LocNode*> loc
 %type <a_lang::IDNode*> name
 %type <a_lang::ExpNode*> exp
@@ -302,22 +303,33 @@ stmtList	: /* epsilon */
 		  {
 			auto pos = $1->pos() == nullptr ? $2->pos() : $1->pos();
 			$$ = new StmtListNode(pos, true);
-			printf("stmt list\n");
 			$$->AddChildren($1->m_Children);
 			$$->AddChild($2);
 		  }
 		| stmtList blockStmt
 		  {
+			auto pos = $1->pos() == nullptr ? $2->pos() : $1->pos();
+			$$ = new StmtListNode(pos, true);
+			$$->AddChildren($1->m_Children);
+			$$->AddChild($2);
 		  }
 
 blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
 		  {
+			$$ = new WhileStmtNode($1->pos(), $3, $6->m_Children);
 		  }
 		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY
 		  {
+			auto x = new IfStmtNode($1->pos(), 0, $3);
+			x->AddStmts1($6->m_Children);
+		  	$$ = x;
 		  }
 		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY ELSE LCURLY stmtList RCURLY
 		  {
+			auto x = new IfStmtNode($1->pos(), 1, $3);
+			x->AddStmts1($6->m_Children);
+			x->AddStmts2($10->m_Children);
+			$$ = x;
 		  }
 
 stmt		: varDecl
@@ -326,7 +338,6 @@ stmt		: varDecl
 		  }
 		| loc ASSIGN exp
 		  {
-			printf("returning assignstmtnode\n");
 			$$ = new AssignStmtNode($1->pos(), $1, $3);
 		  }
 		| callExp
@@ -335,18 +346,27 @@ stmt		: varDecl
 		  }
 		| loc POSTDEC
 		  {
+			$$ = new PostDecStmtNode($1->pos(), $1);
 		  }
 		| loc POSTINC
 		  {
+			$$ = new PostIncStmtNode($1->pos(), $1);
 		  }
 		| TOCONSOLE exp
 		  {
+			auto x = new ToConsoleStmtNode($1->pos());
+			x->m_Exp = $2;
+			$$ = x;
 		  }
 		| FROMCONSOLE loc
 		  {
+			auto x = new FromConsoleStmtNode($1->pos());
+			x->m_Loc = $2;
+			$$ = x;
 		  }
 		| MAYBE exp MEANS exp OTHERWISE exp
 		  {
+			$$ = new MaybeStmtNode($1->pos(), $2, $4, $6);
 		  }
 		| RETURN exp
 		  {
@@ -431,7 +451,6 @@ exp		: exp DASH exp
 		| term
 		  {
 			$$ = $1;
-			printf("returning term\n");
 		  }
 
 callExp		: loc LPAREN RPAREN
@@ -477,10 +496,10 @@ term 		: loc
 		  }
 		| EH
 		  {
+			$$ = new EhNode($1->pos());
 		  }
 		| LPAREN exp RPAREN
 		  {
-			printf("LPAREN exp RPAREN\n");
 			$$ = $2;
 			$$->m_InsideParentheses = true;
 		  }

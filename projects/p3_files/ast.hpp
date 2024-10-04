@@ -381,6 +381,7 @@ namespace a_lang
 		void unparse(std::ostream &out, int indent)
 		{
 			begin(out, indent);
+			out << "eh?";
 			end(out, indent);
 		}
 	};
@@ -540,7 +541,7 @@ namespace a_lang
 		}
 	};
 
-		class StmtListNode : public ASTNode
+	class StmtListNode : public ASTNode
 	{
 	public:
 		StmtListNode(const Position *p, bool useSemicol) : ASTNode(p), m_UseSemicolon(useSemicol) {}
@@ -764,11 +765,16 @@ namespace a_lang
 	class FromConsoleStmtNode : public StmtNode
 	{
 	public:
-		FromConsoleStmtNode(const Position *p) : StmtNode(p) {}
+		FromConsoleStmtNode(const Position *p) : StmtNode(p), m_Loc(nullptr) {}
 		void unparse(std::ostream &out, int indent) override 
 		{
-
+			strout(out, "fromconsole ", indent);
+			if(m_Loc != nullptr)
+				m_Loc->unparse(out, 0);
 		}
+
+
+		LocNode* m_Loc;
 	};
 
 	class IfElseStmtNode : public StmtNode
@@ -784,41 +790,107 @@ namespace a_lang
 	class IfStmtNode : public StmtNode
 	{
 	public:
-		IfStmtNode(const Position *p) : StmtNode(p) {}
+		IfStmtNode(const Position *p, int type, ExpNode* exp) : StmtNode(p), m_Type(type), m_BoolExp(exp) {}
 		void unparse(std::ostream &out, int indent) override
 		{
-
+			switch(m_Type)
+			{
+				case 0: unparse0(out, indent); break;
+				case 1: unparse1(out, indent); break;
+				default:
+					assert(m_Type == 1 || m_Type == 0);
+			}
 		}
+
+		void AddStmts1(const std::vector<StmtNode*>& stmts)
+		{
+			m_StmtList1.insert(m_StmtList1.end(), stmts.begin(), stmts.end());
+		}
+
+		void AddStmts2(const std::vector<StmtNode*>& stmts)
+		{
+			m_StmtList2.insert(m_StmtList2.end(), stmts.begin(), stmts.end());
+		}
+
+		void unparse0(std::ostream &out, int indent)
+		{
+			strout(out, "if (", indent);
+			m_BoolExp->unparse(out, 0);
+			out << ") {\n";
+			for (auto& stmt : m_StmtList1)
+			{
+				stmt->unparse(out, indent+1);
+				if (stmt->myPos != nullptr)
+					out << ";\n";
+			}
+			
+			strout(out, "}", indent);
+		}
+
+		void unparse1(std::ostream &out, int indent)
+		{
+			unparse0(out, indent);
+			out << " else {\n";
+			for (auto& stmt : m_StmtList2)
+			{
+				stmt->unparse(out, indent+1);
+				if (stmt->myPos != nullptr)
+					out << ";\n";
+			}
+			strout(out, "}", indent);
+		}
+		int m_Type;
+		ExpNode* m_BoolExp;
+		std::vector<StmtNode*> m_StmtList1;
+		std::vector<StmtNode*> m_StmtList2;
+		
 	};
 
 	class MaybeStmtNode : public StmtNode
 	{
 	public:
-		MaybeStmtNode(const Position *p) : StmtNode(p) {}
-		void unparse(std::ostream &out, int indent) override
+		MaybeStmtNode(const Position *p, ExpNode* a, ExpNode* b,  ExpNode* c) : StmtNode(p), m_A(a), m_B(b), m_C(c)
 		{
 
 		}
+		void unparse(std::ostream &out, int indent) override
+		{
+			strout(out, "maybe ", indent);
+			m_A->unparse(out, 0);
+			out << " means ";
+			m_B->unparse(out, 0);
+			out << " otherwise ";
+			m_C->unparse(out, 0);
+		}
+
+
+		ExpNode* m_A;
+		ExpNode* m_B;
+		ExpNode* m_C;
 	};
 
 	class PostDecStmtNode : public StmtNode
 	{
 	public:
-		PostDecStmtNode(const Position *p) : StmtNode(p) {}
+		PostDecStmtNode(const Position *p, LocNode* loc) : StmtNode(p), m_Loc(loc) {}
 		void unparse(std::ostream &out, int indent) override
 		{
-
+			m_Loc->unparse(out, indent);
+			out << "--";
 		}
+		LocNode* m_Loc;
 	};
 
 	class PostIncStmtNode : public StmtNode
 	{
 	public:
-		PostIncStmtNode(const Position *p) : StmtNode(p) {}
+		PostIncStmtNode(const Position *p, LocNode* loc) : StmtNode(p), m_Loc(loc)  {}
 		void unparse(std::ostream &out, int indent) override 
 		{
-
+			m_Loc->unparse(out, indent);
+			out << "++";
 		}
+		LocNode* m_Loc;
 	};
 
 	class ReturnStmtNode : public StmtNode
@@ -843,22 +915,48 @@ namespace a_lang
 	class ToConsoleStmtNode : public StmtNode
 	{
 	public:
-		ToConsoleStmtNode(const Position *p) : StmtNode(p) {}
+		ToConsoleStmtNode(const Position *p) : StmtNode(p), m_Exp(nullptr) {}
 		void unparse(std::ostream &out, int indent) override 
 		{
-
+			strout(out, "toconsole ", indent);
+			if (m_Exp != nullptr)
+				m_Exp->unparse(out, 0);
 		}
+
+		ExpNode* m_Exp;
 	};
 
 	class WhileStmtNode : public StmtNode
 	{
 	public:
-		WhileStmtNode(const Position *p) : StmtNode(p) {}
-		void unparse(std::ostream &out, int indent) override
+		WhileStmtNode(const Position *p, ExpNode* bExp, const std::vector<StmtNode*>& stmts) : StmtNode(p), m_BoolExp(bExp), m_StmtList(stmts)
 		{
 
 		}
+		void unparse(std::ostream &out, int indent) override
+		{
+			strout(out, "while (", indent);
+			m_BoolExp->unparse(out, 0);
+			out << ") {\n";
+			for (auto& stmt : m_StmtList)
+			{
+				stmt->unparse(out, indent+1);
+				if (stmt->myPos != nullptr)
+					out << ";\n";
+			}
+			
+			strout(out, "}", indent);
+		}
+
+
+		ExpNode* m_BoolExp;
+		std::vector<StmtNode*> m_StmtList;
+
 	};
+
+
+
+
 
 	/*
 		TYPE NODES

@@ -8,7 +8,30 @@ swag : custom {
 };
 
 v : () -> int {
-    x: bool;
-	return  (1 + 2 *(3*4+4*(3*3)/2)) * 3;
-    x = y;
+	x: bool;
+	return (1 + 2 * (3 * 4 + 4 * (3 * 3) / 2)) * 3;
+	x = y;
+	x--;
+	f++;
+	while (true) {
+		x++;
+	}
+
+	if (x == 4)
+	{
+		toconsole x;
+	}
+
+
+	if ((x+4)*3 == 12)
+	{
+		toconsole "equals 12";
+	}
+	else
+	{
+		toconsole "!= 12";
+	}
+
+    maybe x+2 means x*4 otherwise x;
 }
+
