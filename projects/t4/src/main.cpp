@@ -58,7 +58,6 @@ int main(int argc, char** argv)
         return 1;
     }
 
-
-
+    pTable.DumpAutomaton();
     return 0;
 }

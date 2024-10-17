@@ -1,0 +1,93 @@
+digraph G {
+
+	I12  [label="I12\n\nT::=T . * F \nE::=E + T .\n"];
+
+	I11  [label="I11\n\nT::=T * F .\n"];
+
+	I10  [label="I10\n\nF::=( E ) .\n"];
+
+	I6  [label="I6\n\nT::=F .\n"];
+
+	I7  [label="I7\n\nE::=E . + T \nF::=( E . ) \n"];
+
+	I5  [label="I5\n\nEPRIME::=E .\nE::=E . + T \n"];
+
+	I4  [label="I4\n\nF::=NUMBER .\n"];
+
+	I8  [label="I8\n\nT::=T * . F \nF::=. ( E ) \nF::=. NUMBER \n"];
+
+	I3  [label="I3\n\nE::=T .\nT::=T . * F \n"];
+
+	I9  [label="I9\n\nE::=E + . T \nF::=. ( E ) \nT::=. T * F \nT::=. F \nF::=. NUMBER \n"];
+
+	I2  [label="I2\n\nF::=( . E ) \nE::=. E + T \nE::=. T \nT::=. T * F \nT::=. F \nF::=. ( E ) \nF::=. NUMBER \n"];
+
+	I0  [label="I0\n\nF::=. NUMBER \nF::=. ( E ) \nT::=. F \nT::=. T * F \nE::=. T \nE::=. E + T \nEPRIME::=. E \n"];
+
+	I0 -> I5
+ [label="E"];
+
+	I0 -> I3
+ [label="T"];
+
+	I0 -> I6
+ [label="F"];
+
+	I2 -> I6
+ [label="F"];
+
+	I2 -> I3
+ [label="T"];
+
+	I2 -> I7
+ [label="E"];
+
+	I8 -> I11
+ [label="F"];
+
+	I9 -> I6
+ [label="F"];
+
+	I9 -> I12
+ [label="T"];
+
+	I2 -> I4
+ [label="NUMBER"];
+
+	I2 -> I2
+ [label="("];
+
+	I3 -> I8
+ [label="*"];
+
+	I5 -> I9
+ [label="+"];
+
+	I7 -> I10
+ [label=")"];
+
+	I7 -> I9
+ [label="+"];
+
+	I8 -> I4
+ [label="NUMBER"];
+
+	I8 -> I2
+ [label="("];
+
+	I9 -> I4
+ [label="NUMBER"];
+
+	I9 -> I2
+ [label="("];
+
+	I12 -> I8
+ [label="*"];
+
+	I0 -> I4
+ [label="NUMBER"];
+
+	I0 -> I2
+ [label="("];
+
+}
