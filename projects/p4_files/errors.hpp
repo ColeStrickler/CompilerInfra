@@ -53,12 +53,7 @@ public:
 	static void fatal(
 		const Position * pos,
 		const char * msg
-	){
-		std::cerr << "FATAL " 
-		<< pos->span()
-		<< ": " 
-		<< msg  << std::endl;
-	}
+	);
 
 	static void fatal(
 		const Position * pos,

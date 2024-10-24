@@ -1,7 +1,7 @@
-f{(int, bool)->int} : (arg1 : int, arg2 : bool) -> int {
+f{(int, bool)->int} : (arg1{int} : int, arg2{bool} : bool) -> int {
 }
 g{()->void} : () -> void {
     a{int} : int;
-    f(a, true);
-    g();
+    f{(int, bool)->int}(a{int}, true);
+    g{()->void}();
 }

@@ -6,6 +6,8 @@
 
 namespace a_lang{
 
+void throwUndeclared(const Position* pos);
+
 class NameAnalysis{
 public:
 	static NameAnalysis * build(ProgramNode * astIn){

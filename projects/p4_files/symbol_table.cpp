@@ -60,6 +60,7 @@ namespace a_lang {
 
     void SymbolTable::NewScope()
     {
+		
 		auto newScope = new ScopeTable();
 		scopeTableChain.push_back(newScope);
 	}
@@ -73,24 +74,25 @@ namespace a_lang {
 
     SemSymbol *SymbolTable::GetSymbol(const std::string &symbolName)
     {
-        for (auto it = scopeTableChain.rbegin(); it != scopeTableChain.rbegin(); it++)
+        for (auto it = scopeTableChain.rbegin(); it != scopeTableChain.rend(); it++)
 		{
 			if ((*it)->SymbolExists(symbolName))
 			{
 				return (*it)->GetSymbol(symbolName);
 			}
 		}
+	
 		return nullptr;
     }
 
     bool SymbolTable::SymbolExists(const std::string& symbolName)
     {
-        for (auto it = scopeTableChain.rbegin(); it != scopeTableChain.rbegin(); it++)
+        for (auto it = scopeTableChain.rbegin(); it != scopeTableChain.rend(); it++)
 		{
+
 			if ((*it)->SymbolExists(symbolName))
 				return true;
 		}
-
 		return false;
     }
 
@@ -138,7 +140,9 @@ namespace a_lang {
 			}
 			case SYMBOLTYPE::CLASS:
 			{
-
+				std::string ret;
+				ret += "{" + m_SymbolName  + "}";
+				return ret;
 			}
 			default:
 				break;

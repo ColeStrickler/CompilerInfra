@@ -1,0 +1,8 @@
+swag{swag} : custom {
+    a{int} : int;
+    b{bool} : bool;
+    swagyolo{(int, bool, int)->bool} : (arg1{int} : int, b{bool} : bool, c{int} : int) -> bool {
+        a{int} = c{int} * arg1{int};
+        return a{int} == 4;
+    }
+};

@@ -77,6 +77,8 @@ void AssignStmtNode::unparse(std::ostream& out, int indent){
 	out << ";\n";
 }
 
+
+
 void FromConsoleStmtNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	out << "fromconsole ";
@@ -167,6 +169,7 @@ void ReturnStmtNode::unparse(std::ostream& out, int indent){
 	out << ";\n";
 }
 
+
 void MaybeStmtNode::unparse(std::ostream& out, int indent){
 	if (indent != -1){ doIndent(out, indent); }
 	out << "maybe ";
@@ -178,11 +181,15 @@ void MaybeStmtNode::unparse(std::ostream& out, int indent){
 	if (indent != -1){ out << ";\n"; }
 }
 
+
+
 void CallStmtNode::unparse(std::ostream& out, int indent){
 	if (indent != -1){ doIndent(out, indent); }
 	myCallExp->unparse(out, 0);
 	if (indent != -1){ out << ";\n"; }
 }
+
+
 
 void ExpNode::unparseNested(std::ostream& out){
 	out << "(";
@@ -309,6 +316,8 @@ void ClassTypeNode::unparse(std::ostream& out, int indent){
 	myID->unparse(out, 0);
 }
 
+
+
 void ImmutableTypeNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	out << "immutable ";
@@ -327,6 +336,8 @@ void VoidTypeNode::unparse(std::ostream& out, int indent){
 	out << "void";
 }
 
+
+
 void IntTypeNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	out << "int";
@@ -344,8 +355,6 @@ void IDNode::unparse(std::ostream& out, int indent){
 	SemSymbol* sym = getSymbol();
 	if (sym)
 		out << sym->toString(); 
-	else
-		printf("no sym %s\n", name.c_str());
 	//TODO: should add something here to print out the 
 	// symbol attached during name analysis
 }

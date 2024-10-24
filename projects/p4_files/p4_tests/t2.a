@@ -1,0 +1,6 @@
+fn : (arg1: int) -> int {
+    a = 4;
+    arg1 = a;
+
+    return arg1;
+}
