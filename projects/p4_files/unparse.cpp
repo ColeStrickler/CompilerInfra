@@ -197,6 +197,11 @@ void ExpNode::unparseNested(std::ostream& out){
 	out << ")";
 }
 
+void ExpNode::EnsureDecl()
+{
+	ensureDecl = true;
+}
+
 void CallExpNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	myCallee->unparse(out, 0);
@@ -352,9 +357,12 @@ void IDNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	out << name;
 
+	
 	SemSymbol* sym = getSymbol();
 	if (sym)
-		out << sym->toString(); 
+		out << sym->toString();
+	else
+		out << "id::unparse no sym " << name << "\n"; 
 	//TODO: should add something here to print out the 
 	// symbol attached during name analysis
 }

@@ -30,8 +30,6 @@ bool ProgramNode::nameAnalysis(SymbolTable * symTab){
 	for (auto global : *myGlobals){
 		res = global->nameAnalysis(symTab) && res;
 	}
-
-	printf("res: %d\n", res);
 	return res;
 }
 
@@ -45,15 +43,34 @@ bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	//	" subtree to the symbolTable as a new"	
 	//	" entry in the current scope table"
 	//);
+
+
+	myType->DisableVoid();
+	bool add = true;
+	if(!myType->nameAnalysis(symTab))
+	{
+		add = false;
+		nameAnalysisOk = false;
+		Report::fatal(myID->pos(), "Invalid type in declaration");
+	}
+
 	std::string name = myID->getName();
 	SemSymbol* varDeclSymbol = new SemSymbol(SYMBOLTYPE::VARIABLE, myID->getName());
 	varDeclSymbol->AddVariableDeclType(myType);
-	if (symTab->SymbolExists(name))
+	
+	if (symTab->SymbolExistsInCurrentScope(name))
 	{
-		// handle the fact that a symbol with this name is already declared
+		// handle already declared
+		add = false;
+		nameAnalysisOk = false;
+		Report::fatal(myID->pos(), "Multiply declared identifier");
 	}
+
+	//myType->nameAnalysis(symTab);
+	if (add)
+		symTab->AddSymbolCurrentScope(varDeclSymbol);
 	myID->attachSymbol(varDeclSymbol);
-	symTab->AddSymbolCurrentScope(varDeclSymbol);
+	
 
 	return nameAnalysisOk;
 }
@@ -66,14 +83,16 @@ bool ClassDefnNode::nameAnalysis(SymbolTable *symTab)
 	// add class symbol to current scope
 	std::string name = myID->getName();
 	SemSymbol* classDeclSymbol = new SemSymbol(SYMBOLTYPE::CLASS, name);
-	if (symTab->SymbolExists(name))
+	if (symTab->SymbolExistsInCurrentScope(name))
 	{
 		// handle already declared
+		nameAnalysisOk = false;
+		Report::fatal(pos(), "Multiply declared identifier");
 	}
 	myID->attachSymbol(classDeclSymbol);
 	symTab->AddSymbolCurrentScope(classDeclSymbol);
 
-	symTab->NewScope();
+	//symTab->NewScope();
 
 	for (auto it = myMembers->begin(); it != myMembers->end(); it++)
 	{
@@ -82,7 +101,7 @@ bool ClassDefnNode::nameAnalysis(SymbolTable *symTab)
 	}
 
 
-	symTab->EndScope(); 
+	//symTab->EndScope(); 
 	// DO we create a new scope for inside the class body?
 	return nameAnalysisOk;
 }
@@ -93,14 +112,14 @@ bool CallExpNode::nameAnalysis(SymbolTable *symTab)
     bool nameAnalysisOk = true;
 	if(!myCallee->isDeclared(symTab))
 	{
-		//printf("was not declared\n");
 		throwUndeclared(myCallee->pos());
 		nameAnalysisOk = false;// ERROR use before decl
 	}
 
 
 	for (auto it = myArgs->begin(); it != myArgs->end(); it++)
-	{
+	{		
+		(*it)->EnsureDecl();
 		if (!(*it)->nameAnalysis(symTab))
 		{
 			nameAnalysisOk = false;
@@ -131,16 +150,18 @@ bool AssignStmtNode::nameAnalysis(SymbolTable *symTab)
 {
 	bool ok = true;
 	
-
-	if (!myDst->isDeclared(symTab))
+	myDst->EnsureDecl();
+	
+	if (!myDst->nameAnalysis(symTab))
 	{
-		throwUndeclared(myDst->pos());
 		ok = false;
-		printf("dst not decl\n");
+		//printf("dst not decl\n");
 	}
+
+	mySrc->EnsureDecl();
 	if (!mySrc->nameAnalysis(symTab))
 	{
-		throwUndeclared(mySrc->pos());
+		//throwUndeclared(mySrc->pos());
 		ok = false;
 	}
 
@@ -177,28 +198,41 @@ bool MaybeStmtNode::nameAnalysis(SymbolTable *symTab)
 bool MemberFieldExpNode::isDeclared(SymbolTable *symTab)
 {
 	bool ok = true;
+	if(!myBase->isDeclared(symTab))
+	{
+		throwUndeclared(myBase->pos());
+		ok = false;
+	}
+
 	auto name = myField->getName();
 	if(!symTab->SymbolExists(name))
 	{
-		throwUndeclared(pos());
+		throwUndeclared(myField->pos());
 		ok = false;
 	}
 	auto sym = symTab->GetSymbol(name);
 	myField->attachSymbol(sym);	
+
 	return ok;
 }
 
 bool IDNode::isDeclared(SymbolTable *symTab)
 {
+	
 	bool ok = true;
     auto name = getName();
 	if(!symTab->SymbolExists(name))
 	{
 		ok = false;
+		if (ensureDecl)
+		{
+			throwUndeclared(pos());
+		}
 	}
 		
 	auto sym = symTab->GetSymbol(name);
 	attachSymbol(sym);
+
 	return ok;
 }
 
@@ -208,7 +242,7 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	//	" you should add and make current a new"	
 	//	" scope table for my body"
 	//);
-	std::cout << "FnDeclNode::nameAnalysis()\n";
+
 
 	
 	std::string name = myID->getName();
@@ -216,9 +250,11 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	fnSymbol->AddFunctionParameters(getFormals());
 	fnSymbol->AddFunctionReturnType(myRetType);
 	
-	if (symTab->SymbolExists(name))
+	if (symTab->SymbolExistsInCurrentScope(name))
 	{
-		// handle the fact that a symbol with this name already exists
+		// handle already declared
+		nameAnalysisOk = false;
+		Report::fatal(myID->pos(), "Multiply declared identifier");
 	}
 	myID->attachSymbol(fnSymbol);
 	// Add functionDecl to current scope
@@ -231,33 +267,43 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	// add formalDecls to the new scope
 	for (auto it = myFormals->begin(); it != myFormals->end(); it++)
 	{
-		auto formalID = (*it)->ID();
+		auto f = (*it);
+		auto type = f->getTypeNode();
+		type->DisableVoid();
+		bool add = true;
+		auto formalID = f->ID();
+		if(!type->nameAnalysis(symTab))
+		{
+			add = false;
+			nameAnalysisOk = false;
+			Report::fatal(formalID->pos(), "Invalid type in declaration");
+		}
+
+		
 		std::string formalName = formalID->getName();
 		if (formalID->isDeclared(symTab))
 		{
 			// throw previously declared
 		}
 		auto sym = new SemSymbol(SYMBOLTYPE::VARIABLE, formalName);
-		sym->AddVariableDeclType((*it)->getTypeNode());
-		symTab->AddSymbolCurrentScope(sym);
+		sym->AddVariableDeclType(f->getTypeNode());
+		if (add)
+			symTab->AddSymbolCurrentScope(sym);
 		formalID->attachSymbol(sym);
 	}
-	printf("here names\n");
 
 	
 	for (auto it = myBody->begin(); it != myBody->end(); it++)
 	{
 		auto stmt = *it;
-		printf("stmt process\n");
 		if(!stmt->nameAnalysis(symTab))
 		{
 			nameAnalysisOk = false;
-			printf("stmt not ok\n");
+			//printf("stmt not ok\n");
 		}
 	}
 
 	symTab->EndScope();
-	printf("fndecl ok %d\n", nameAnalysisOk);
 	return nameAnalysisOk;
 }
 
@@ -272,11 +318,18 @@ bool IntTypeNode::nameAnalysis(SymbolTable* symTab){
 	return true;
 }
 
-
+bool VoidTypeNode::nameAnalysis(SymbolTable *symTab)
+{
+	if (disableVoid)
+	{
+		return false;
+	}
+	return true;
+}
 }
 
 void a_lang::throwUndeclared(const Position* pos)
 {
-	printf("here undecl %s\n", pos->span().c_str());
+	//printf("here undecl %s\n", pos->span().c_str());
 	Report::fatal(pos, "Undeclared identifier");
 }

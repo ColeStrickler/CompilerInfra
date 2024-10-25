@@ -1,0 +1,25 @@
+swag: int;
+
+
+swag2 : custom {
+    a : int;
+    b : bool;
+
+    swagyolo : (arg1: int, b: bool, c : int) -> bool
+    {
+        a = c * arg1;
+        return a == 4;
+    }
+};
+
+
+
+swag3 : (arg1 : int, arg2 : bool) -> bool {
+    arg1 = swag3(1, false);
+    if (arg2)
+    {
+        cType : swag2;
+        arg1 = cType->a;
+        cType->swagyolo(2*3*4+6-4*arg1, cType->b, x);
+    }
+}

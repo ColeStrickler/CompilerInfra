@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string.h>
 #include <list>
+#include <iostream>
 #include "tokens.hpp"
 
 
@@ -45,15 +46,17 @@ private:
 
 class ExpNode : public ASTNode{
 protected:
-	ExpNode(const Position * p) : ASTNode(p){ }
+	ExpNode(const Position * p) : ASTNode(p), ensureDecl(false){ }
 public:
 	virtual void unparseNested(std::ostream& out);
+	void EnsureDecl();
+	bool ensureDecl;
 };
 
 class LocNode : public ExpNode{
 public:
 	LocNode(const Position * p)
-	: ExpNode(p){}
+	: ExpNode(p) {}
 	virtual bool isDeclared(SymbolTable* symTab) = 0;
 };
 
@@ -65,6 +68,7 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	void unparseNested(std::ostream& out) override;
 	void attachSymbol(SemSymbol * symbolIn);
+	
 	SemSymbol* getSymbol() const { return mySymbol; }
 	bool isDeclared(SymbolTable* symTab);
 	bool nameAnalysis(SymbolTable *symTab) override
@@ -79,12 +83,15 @@ private:
 
 class TypeNode : public ASTNode{
 public:
-	TypeNode(const Position * p) : ASTNode(p){ }
+	TypeNode(const Position * p) : ASTNode(p), disableVoid(false) { }
 	void unparse(std::ostream&, int) override = 0;
 	virtual std::string GetTypeString()
 	{
 		return "Raw TypeNode";
 	}
+	void DisableVoid() {disableVoid = true;}
+
+	bool disableVoid;
 };
 
 class StmtNode : public ASTNode{
@@ -132,6 +139,11 @@ public:
 	FormalDeclNode(const Position * p, IDNode * id, TypeNode * type)
 	: VarDeclNode(p, id, type, nullptr){ }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab)
+	{
+		
+		return true;
+	}
 
 	// we handle adding the decls in FnDeclNode
 };
@@ -385,6 +397,17 @@ public:
 	: LocNode(p), myBase(inBase), myField(inField) { }
 	void unparse(std::ostream& out, int indent) override;
 	bool isDeclared(SymbolTable* symTab);
+	bool nameAnalysis(SymbolTable * symTab)
+	{
+		bool ok = true;
+		if (!myBase->isDeclared(symTab))
+			ok = false;
+		
+		if (!myField->isDeclared(symTab))
+			ok = false;
+
+		return ok;
+	}
 private:
 	LocNode * myBase;
 	IDNode * myField;
@@ -408,7 +431,15 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -419,7 +450,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 	
 };
@@ -431,7 +469,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -442,7 +487,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -453,7 +505,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -464,7 +523,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -475,7 +541,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -486,7 +559,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -497,7 +577,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -508,7 +595,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -519,7 +613,14 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -530,7 +631,15 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
-		return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+		if (ensureDecl)
+		{
+			myExp1->EnsureDecl();
+			myExp2->EnsureDecl();
+		}
+
+		bool ret = myExp1->nameAnalysis(symTab);
+		ret &= myExp2->nameAnalysis(symTab);
+		return ret;
 	}
 };
 
@@ -543,6 +652,9 @@ public:
 	virtual void unparse(std::ostream& out, int indent) override = 0;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
+		if (ensureDecl)
+			myExp->EnsureDecl();
+
 		return myExp->nameAnalysis(symTab);
 	}
 protected:
@@ -556,6 +668,8 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
+		if (ensureDecl)
+			myExp->EnsureDecl();
 		return myExp->nameAnalysis(symTab);
 	}
 };
@@ -567,6 +681,8 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *symTab) override
 	{
+		if (ensureDecl)
+			myExp->EnsureDecl();
 		return myExp->nameAnalysis(symTab);
 	}
 };
@@ -579,10 +695,8 @@ public:
 	{
 		return "void";
 	}
-	bool nameAnalysis(SymbolTable *symTab) override
-	{
-		return true;
-	}
+	bool nameAnalysis(SymbolTable *symTab) override;
+	
 };
 
 class ClassTypeNode : public TypeNode{
@@ -593,7 +707,7 @@ public:
 
 	std::string GetTypeString() override
 	{
-		return "class";
+		return myID->getName();
 	}
 
 	bool nameAnalysis(SymbolTable *symTab) override;

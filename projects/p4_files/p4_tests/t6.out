@@ -1,0 +1,16 @@
+swag{int} : int;
+swag2{swag2} : custom {
+    a{int} : int;
+    b{bool} : bool;
+    swagyolo{(int, bool, int)->bool} : (arg1{int} : int, b{bool} : bool, c{int} : int) -> bool {
+        a{int} = c{int} * arg1{int};
+        return a{int} == 4;
+    }
+};
+swag3{(int, bool)->bool} : (arg1{int} : int, arg2{bool} : bool) -> bool {
+    arg1{int} = swag3{(int, bool)->bool}(1, false);
+    if (arg2{bool}){
+        arg1{int} = swag2{swag2}->a{int};
+        swag2{swag2}->swagyolo{(int, bool, int)->bool}(arg1{int}, arg2{bool}, 1);
+    }
+}

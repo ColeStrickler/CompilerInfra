@@ -96,6 +96,14 @@ namespace a_lang {
 		return false;
     }
 
+	bool SymbolTable::SymbolExistsInCurrentScope(const std::string& symbolName)
+    {
+        if(scopeTableChain[scopeTableChain.size() - 1]->SymbolExists(symbolName))
+			return true;
+		return false;
+    }
+
+
     SemSymbol::~SemSymbol()
     {
     }

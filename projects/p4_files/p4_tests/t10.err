@@ -1,0 +1,3 @@
+FATAL [17,1]-[17,5]: Multiply declared identifier
+FATAL [18,12]-[18,17]: Undeclared identifier
+Name Analysis Failed

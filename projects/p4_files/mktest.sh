@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-if ["$#" -ne 1]; then
+if [ "$#" -ne 1 ]; then
     echo "Usage: ./mktest.sh test#";
     exit
 fi

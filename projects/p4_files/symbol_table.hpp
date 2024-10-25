@@ -83,7 +83,7 @@ class SymbolTable{
 		//TODO: add functions to create a new ScopeTable
 		// when a new scope is entered, drop a ScopeTable
 		// when a scope is exited, etc. 
-
+		bool SymbolExistsInCurrentScope(const std::string& symbolName);
 		bool AddSymbolCurrentScope(SemSymbol* sym);
 		void NewScope();
 		void EndScope();
