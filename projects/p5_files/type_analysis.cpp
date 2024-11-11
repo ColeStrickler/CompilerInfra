@@ -94,6 +94,20 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
 	}
 
 
+	/*
+		TODO: how exactly to handle these?
+	*/
+	if (srcType->isClass())
+	{
+		
+	}
+	if (tgtType->isClass())
+	{
+		
+	}
+
+
+
 	//While incomplete, this gives you one case for 
 	// assignment: if the types are exactly the same
 	// it is usually ok to do the assignment. One

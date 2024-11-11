@@ -334,6 +334,30 @@ public:
 	PlusNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	virtual void typeAnalysis(TypeAnalysis * ta) override
+	{
+		auto t1 = ta->nodeType(myExp1);
+		auto t2 = ta->nodeType(myExp2);
+
+
+		// I think this is correctly handling the asFn() ??
+		if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
+		{
+			ta->nodeType(this, ErrorType::produce());
+			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
+			return;
+		}
+		if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
+		{
+			ta->nodeType(this, ErrorType::produce());
+			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
+			return;
+		}
+
+
+		ta->nodeType(this, BasicType::produce(INT));
+		return;
+	}
 };
 
 class MinusNode : public BinaryExpNode{
@@ -341,6 +365,31 @@ public:
 	MinusNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	virtual void typeAnalysis(TypeAnalysis * ta) override
+	{
+		auto t1 = ta->nodeType(myExp1);
+		auto t2 = ta->nodeType(myExp2);
+
+
+		// I think this is correctly handling the asFn() ??
+		if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
+		{
+			ta->nodeType(this, ErrorType::produce());
+			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
+			return;
+		}
+		if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
+		{
+			ta->nodeType(this, ErrorType::produce());
+			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
+			return;
+		}
+
+
+		ta->nodeType(this, BasicType::produce(INT));
+		return;
+	}
+	
 };
 
 class TimesNode : public BinaryExpNode{
@@ -348,6 +397,30 @@ public:
 	TimesNode(const Position * p, ExpNode * e1In, ExpNode * e2In)
 	: BinaryExpNode(p, e1In, e2In){ }
 	void unparse(std::ostream& out, int indent) override;
+	virtual void typeAnalysis(TypeAnalysis * ta) override
+	{
+		auto t1 = ta->nodeType(myExp1);
+		auto t2 = ta->nodeType(myExp2);
+
+
+		// I think this is correctly handling the asFn() ??
+		if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
+		{
+			ta->nodeType(this, ErrorType::produce());
+			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
+			return;
+		}
+		if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
+		{
+			ta->nodeType(this, ErrorType::produce());
+			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
+			return;
+		}
+
+
+		ta->nodeType(this, BasicType::produce(INT));
+		return;
+	}
 };
 
 class DivideNode : public BinaryExpNode{
@@ -355,6 +428,30 @@ public:
 	DivideNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	virtual void typeAnalysis(TypeAnalysis * ta) override
+	{
+		auto t1 = ta->nodeType(myExp1);
+		auto t2 = ta->nodeType(myExp2);
+
+
+		// I think this is correctly handling the asFn() ??
+		if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
+		{
+			ta->nodeType(this, ErrorType::produce());
+			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
+			return;
+		}
+		if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
+		{
+			ta->nodeType(this, ErrorType::produce());
+			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
+			return;
+		}
+
+
+		ta->nodeType(this, BasicType::produce(INT));
+		return;
+	}
 };
 
 class AndNode : public BinaryExpNode{
