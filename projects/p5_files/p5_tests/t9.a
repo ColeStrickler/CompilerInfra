@@ -1,0 +1,5 @@
+b:bool;
+
+g : () -> void {
+	return b;
+}

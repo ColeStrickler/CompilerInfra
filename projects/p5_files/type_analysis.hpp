@@ -5,7 +5,6 @@
 #include "symbol_table.hpp"
 #include "types.hpp"
 
-
 namespace a_lang {
 
 class NameAnalysis;
@@ -27,6 +26,7 @@ private:
 
 public:
 	static TypeAnalysis * build(NameAnalysis * astRoot);
+	const DataType* currentFuncReturnType;
 	//static TypeAnalysis * build();
 
 	//The type analysis has an instance variable to say whether
@@ -35,6 +35,13 @@ public:
 	// root during the TypeAnalysis pass.
 	bool passed(){
 		return !hasError;
+	}
+
+	bool areSameType(const DataType* a, const DataType* b)
+	{
+		if((a->isBool() && !b->isBool()) || (a->isInt() && !b->isInt()) || (a->isClass() && !b->isClass()) || (a->isString() && !b->isString()))
+			return false;
+		return true;
 	}
 
 	void setCurrentFnType(const FnType * type){
@@ -180,6 +187,7 @@ private:
 	const FnType * currentFnType;
 	bool hasError;
 public:
+	NameAnalysis* m_NameAnalysis;
 	ProgramNode * ast;
 };
 

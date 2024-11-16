@@ -9,6 +9,8 @@
 #include "symbol_table.hpp"
 #include "types.hpp"
 
+
+
 namespace a_lang {
 
 class TypeAnalysis;
@@ -211,6 +213,7 @@ public:
 	: StmtNode(p), myDst(inDst){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 private:
 	LocNode * myDst;
 };
@@ -221,6 +224,8 @@ public:
 	: StmtNode(p), mySrc(inSrc){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
+	
 private:
 	ExpNode * mySrc;
 };
@@ -231,6 +236,7 @@ public:
 	: StmtNode(p), myLoc(inLoc){ }
 	void unparse(std::ostream& out, int indent) override;
 	virtual bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 private:
 	LocNode * myLoc;
 };
@@ -241,6 +247,7 @@ public:
 	: StmtNode(p), myLoc(inLoc){ }
 	void unparse(std::ostream& out, int indent) override;
 	virtual bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis *ta);
 private:
 	LocNode * myLoc;
 };
@@ -252,6 +259,7 @@ public:
 	: StmtNode(p), myCond(condIn), myBody(bodyIn){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis *ta);
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBody;
@@ -266,6 +274,7 @@ public:
 	  myBodyTrue(bodyTrueIn), myBodyFalse(bodyFalseIn) { }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis *ta);
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBodyTrue;
@@ -279,6 +288,7 @@ public:
 	: StmtNode(p), myCond(condIn), myBody(bodyIn){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis *ta);
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBody;
@@ -290,6 +300,7 @@ public:
 	: StmtNode(p), myExp(exp){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis* ta) override;
 private:
 	ExpNode * myExp;
 };
@@ -302,6 +313,7 @@ public:
 	void unparse(std::ostream& out, int indent) override;
 	void unparseNested(std::ostream& out) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 private:
 	LocNode * myCallee;
 	std::list<ExpNode *> * myArgs;
@@ -334,30 +346,7 @@ public:
 	PlusNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
-	virtual void typeAnalysis(TypeAnalysis * ta) override
-	{
-		auto t1 = ta->nodeType(myExp1);
-		auto t2 = ta->nodeType(myExp2);
-
-
-		// I think this is correctly handling the asFn() ??
-		if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
-		{
-			ta->nodeType(this, ErrorType::produce());
-			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
-			return;
-		}
-		if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
-		{
-			ta->nodeType(this, ErrorType::produce());
-			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
-			return;
-		}
-
-
-		ta->nodeType(this, BasicType::produce(INT));
-		return;
-	}
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class MinusNode : public BinaryExpNode{
@@ -365,30 +354,8 @@ public:
 	MinusNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
-	virtual void typeAnalysis(TypeAnalysis * ta) override
-	{
-		auto t1 = ta->nodeType(myExp1);
-		auto t2 = ta->nodeType(myExp2);
-
-
-		// I think this is correctly handling the asFn() ??
-		if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
-		{
-			ta->nodeType(this, ErrorType::produce());
-			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
-			return;
-		}
-		if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
-		{
-			ta->nodeType(this, ErrorType::produce());
-			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
-			return;
-		}
-
-
-		ta->nodeType(this, BasicType::produce(INT));
-		return;
-	}
+	void typeAnalysis(TypeAnalysis * ta) override;
+	
 	
 };
 
@@ -397,30 +364,8 @@ public:
 	TimesNode(const Position * p, ExpNode * e1In, ExpNode * e2In)
 	: BinaryExpNode(p, e1In, e2In){ }
 	void unparse(std::ostream& out, int indent) override;
-	virtual void typeAnalysis(TypeAnalysis * ta) override
-	{
-		auto t1 = ta->nodeType(myExp1);
-		auto t2 = ta->nodeType(myExp2);
+	void typeAnalysis(TypeAnalysis * ta) override;
 
-
-		// I think this is correctly handling the asFn() ??
-		if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
-		{
-			ta->nodeType(this, ErrorType::produce());
-			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
-			return;
-		}
-		if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
-		{
-			ta->nodeType(this, ErrorType::produce());
-			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
-			return;
-		}
-
-
-		ta->nodeType(this, BasicType::produce(INT));
-		return;
-	}
 };
 
 class DivideNode : public BinaryExpNode{
@@ -428,30 +373,7 @@ public:
 	DivideNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
-	virtual void typeAnalysis(TypeAnalysis * ta) override
-	{
-		auto t1 = ta->nodeType(myExp1);
-		auto t2 = ta->nodeType(myExp2);
-
-
-		// I think this is correctly handling the asFn() ??
-		if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
-		{
-			ta->nodeType(this, ErrorType::produce());
-			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
-			return;
-		}
-		if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
-		{
-			ta->nodeType(this, ErrorType::produce());
-			Report::fatal(this->pos(), "Arithmetic operator applied to invalid operand");
-			return;
-		}
-
-
-		ta->nodeType(this, BasicType::produce(INT));
-		return;
-	}
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class AndNode : public BinaryExpNode{
@@ -459,6 +381,7 @@ public:
 	AndNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class OrNode : public BinaryExpNode{
@@ -466,6 +389,7 @@ public:
 	OrNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class EqualsNode : public BinaryExpNode{
@@ -473,6 +397,7 @@ public:
 	EqualsNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class NotEqualsNode : public BinaryExpNode{
@@ -480,6 +405,7 @@ public:
 	NotEqualsNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class LessNode : public BinaryExpNode{
@@ -487,6 +413,7 @@ public:
 	LessNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class LessEqNode : public BinaryExpNode{
@@ -494,6 +421,7 @@ public:
 	LessEqNode(const Position * pos, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(pos, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class GreaterNode : public BinaryExpNode{
@@ -501,6 +429,7 @@ public:
 	GreaterNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class GreaterEqNode : public BinaryExpNode{
@@ -508,6 +437,7 @@ public:
 	GreaterEqNode(const Position * p, ExpNode * e1, ExpNode * e2)
 	: BinaryExpNode(p, e1, e2){ }
 	void unparse(std::ostream& out, int indent) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class UnaryExpNode : public ExpNode {
@@ -528,6 +458,7 @@ public:
 	: UnaryExpNode(p, exp){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class NotNode : public UnaryExpNode{
@@ -536,6 +467,7 @@ public:
 	: UnaryExpNode(p, exp){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis * ta) override;
 };
 
 class VoidTypeNode : public TypeNode{
@@ -666,6 +598,7 @@ public:
 	: StmtNode(p), myCallExp(expIn){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis* ta) override;
 private:
 	CallExpNode * myCallExp;
 };

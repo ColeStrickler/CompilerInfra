@@ -206,12 +206,16 @@ void MinusNode::unparse(std::ostream& out, int indent){
 	myExp2->unparseNested(out);
 }
 
+
+
 void PlusNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	myExp1->unparseNested(out); 
 	out << " + ";
 	myExp2->unparseNested(out);
 }
+
+
 
 void TimesNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
@@ -220,12 +224,16 @@ void TimesNode::unparse(std::ostream& out, int indent){
 	myExp2->unparseNested(out);
 }
 
+
+
 void DivideNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	myExp1->unparseNested(out); 
 	out << " / ";
 	myExp2->unparseNested(out);
 }
+
+
 
 void AndNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
@@ -234,12 +242,14 @@ void AndNode::unparse(std::ostream& out, int indent){
 	myExp2->unparseNested(out);
 }
 
+
 void OrNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	myExp1->unparseNested(out); 
 	out << " or ";
 	myExp2->unparseNested(out);
 }
+
 
 void EqualsNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
@@ -248,12 +258,16 @@ void EqualsNode::unparse(std::ostream& out, int indent){
 	myExp2->unparseNested(out);
 }
 
+
+
 void NotEqualsNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	myExp1->unparseNested(out); 
 	out << " != ";
 	myExp2->unparseNested(out);
 }
+
+
 
 void GreaterNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
@@ -262,12 +276,14 @@ void GreaterNode::unparse(std::ostream& out, int indent){
 	myExp2->unparseNested(out);
 }
 
+
 void GreaterEqNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	myExp1->unparseNested(out); 
 	out << " >= ";
 	myExp2->unparseNested(out);
 }
+
 
 void LessNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
@@ -276,12 +292,15 @@ void LessNode::unparse(std::ostream& out, int indent){
 	myExp2->unparseNested(out);
 }
 
+
+
 void LessEqNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	myExp1->unparseNested(out); 
 	out << " <= ";
 	myExp2->unparseNested(out);
 }
+
 
 void NotNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);

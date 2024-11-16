@@ -1,0 +1,3 @@
+FATAL [8,4]-[8,5]: Type of actual does not match type of formal
+FATAL [8,7]-[8,8]: Type of actual does not match type of formal
+Type Analysis Failed

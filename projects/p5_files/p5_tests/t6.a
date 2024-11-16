@@ -1,0 +1,9 @@
+a:int;
+b:bool;
+f : (arg1 : int, arg2 : bool) -> void {
+	
+}
+
+g : () -> void {
+	f(b, a);
+}

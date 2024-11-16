@@ -1,0 +1,5 @@
+b:bool;
+
+g : () -> bool {
+	return b == 6;
+}

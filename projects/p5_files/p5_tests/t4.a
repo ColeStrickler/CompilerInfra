@@ -1,0 +1,9 @@
+a:int;
+b:bool;
+f : () -> void {
+	
+}
+
+g : () -> void {
+	toconsole f();
+}

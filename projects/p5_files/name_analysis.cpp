@@ -3,7 +3,13 @@
 #include "errName.hpp"
 #include "types.hpp"
 
+
+
 namespace a_lang{
+
+
+
+
 
 bool ProgramNode::nameAnalysis(SymbolTable * symTab){
 	//Enter the global scope
@@ -29,17 +35,22 @@ bool PostDecStmtNode::nameAnalysis(SymbolTable * symTab){
 	return this->myLoc->nameAnalysis(symTab);
 }
 
+
+
 bool PostIncStmtNode::nameAnalysis(SymbolTable * symTab){
 	return this->myLoc->nameAnalysis(symTab);
 }
+
 
 bool FromConsoleStmtNode::nameAnalysis(SymbolTable * symTab){
 	return myDst->nameAnalysis(symTab);
 }
 
+
 bool ToConsoleStmtNode::nameAnalysis(SymbolTable * symTab){
 	return mySrc->nameAnalysis(symTab);
 }
+
 
 bool IfStmtNode::nameAnalysis(SymbolTable * symTab){
 	bool result = true;
@@ -51,6 +62,7 @@ bool IfStmtNode::nameAnalysis(SymbolTable * symTab){
 	symTab->leaveScope();
 	return result;
 }
+
 
 bool IfElseStmtNode::nameAnalysis(SymbolTable * symTab){
 	bool result = true;
@@ -67,6 +79,7 @@ bool IfElseStmtNode::nameAnalysis(SymbolTable * symTab){
 	symTab->leaveScope();
 	return result;
 }
+
 
 bool WhileStmtNode::nameAnalysis(SymbolTable * symTab){
 	bool result = true;
@@ -237,6 +250,7 @@ bool NegNode::nameAnalysis(SymbolTable* symTab){
 }
 
 
+
 bool NotNode::nameAnalysis(SymbolTable* symTab){
 	return myExp->nameAnalysis(symTab);
 }
@@ -247,6 +261,8 @@ bool ReturnStmtNode::nameAnalysis(SymbolTable * symTab){
 	}
 	return myExp->nameAnalysis(symTab);
 }
+
+
 
 bool MaybeStmtNode::nameAnalysis(SymbolTable* symTab){
 	bool res = true;
@@ -259,6 +275,8 @@ bool MaybeStmtNode::nameAnalysis(SymbolTable* symTab){
 bool CallStmtNode::nameAnalysis(SymbolTable* symTab){
 	return myCallExp->nameAnalysis(symTab);
 }
+
+
 
 bool TypeNode::nameAnalysis(SymbolTable * symTab){
 	return true;
