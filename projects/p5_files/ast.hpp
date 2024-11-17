@@ -202,6 +202,7 @@ public:
 	: StmtNode(p), myDst(inDst), mySrc1(inSrc1), mySrc2(inSrc2){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis* ta) override;
 private:
 	LocNode * myDst;
 	ExpNode * mySrc1;

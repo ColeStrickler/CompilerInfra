@@ -1,2 +1,2 @@
-FATAL [5,5]-[5,8]: Arithmetic operator applied to invalid operand
+FATAL [5,5]-[5,6]: Arithmetic operator applied to invalid operand
 Type Analysis Failed

@@ -1,0 +1,2 @@
+FATAL [15,16]-[15,17]: Relational operator applied to non-numeric operand
+Type Analysis Failed

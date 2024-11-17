@@ -208,7 +208,7 @@ void PostDecStmtNode::typeAnalysis(TypeAnalysis *ta)
 	if (!locType->isInt() || locType->isImmutable())
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(pos());
+		ta->errMathOpd(myLoc->pos());
 		return;
 	}
 }
@@ -226,7 +226,7 @@ void PostIncStmtNode::typeAnalysis(TypeAnalysis *ta)
 	if (!locType->isInt() || locType->isImmutable())
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(pos());
+		ta->errMathOpd(myLoc->pos());
 		return;
 	}
 }
@@ -248,6 +248,7 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
 	// sort of serves as a way to cast the subtype
 	if (tgtType->asError() || srcType->asError()){
 		ta->nodeType(this, ErrorType::produce());
+		return;
 		// --> do we wanna return here?
 	}
 
@@ -259,26 +260,31 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
 		// analysis has failed, meaning that main.cpp
 		// will print "Type check failed" at the end
 		ta->nodeType(this, ErrorType::produce());
-		ta->errAssignOpr(this->pos());
+		ta->errAssignOpr(mySrc->pos());
 		return;
 	}
 
 
 	/*
-		TODO: how exactly to handle these?
+		TODO: how exactly to handle these? --> not sure if we can do this or not
 	*/
-	if (srcType->isClass())
+	if (tgtType->isClass() || tgtType->asFn())
 	{
-		
+		ta->nodeType(this, ErrorType::produce());
+		ta->errAssignOpd(myDst->pos());
 	}
-	if (tgtType->isClass())
+
+	if (srcType->isClass() || srcType->asFn())
 	{
-		
+		ta->nodeType(this, ErrorType::produce());
+		ta->errAssignOpd(mySrc->pos());
 	}
+
+
 	if (tgtType->isImmutable())
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errAssignOpd(pos());
+		ta->errAssignOpd(myDst->pos());
 		return;
 	}
 
@@ -390,24 +396,23 @@ void PlusNode::typeAnalysis(TypeAnalysis *ta)
 {
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
-
 	auto t1 = ta->nodeType(myExp1);
 	auto t2 = ta->nodeType(myExp2);
 	// I think this is correctly handling the asFn() ??
 	if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(this->pos());
+		ta->errMathOpd(myExp1->pos());
 		return;
 	}
 	if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(this->pos());
+		ta->errMathOpd(myExp2->pos());
 		return;
 	}
 	ta->nodeType(this, BasicType::produce(INT));
-	return;	
+	return;
 }
 
 void MinusNode::typeAnalysis(TypeAnalysis *ta)
@@ -420,13 +425,13 @@ void MinusNode::typeAnalysis(TypeAnalysis *ta)
 	if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(this->pos());
+		ta->errMathOpd(myExp1->pos());
 		return;
 	}
 	if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(this->pos());
+		ta->errMathOpd(myExp2->pos());
 		return;
 	}
 	ta->nodeType(this, BasicType::produce(INT));
@@ -437,20 +442,19 @@ void TimesNode::typeAnalysis(TypeAnalysis *ta)
 {
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
-
 	auto t1 = ta->nodeType(myExp1);
 	auto t2 = ta->nodeType(myExp2);
 	// I think this is correctly handling the asFn() ??
 	if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(this->pos());
+		ta->errMathOpd(myExp1->pos());
 		return;
 	}
 	if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(this->pos());
+		ta->errMathOpd(myExp2->pos());
 		return;
 	}
 	ta->nodeType(this, BasicType::produce(INT));
@@ -461,20 +465,19 @@ void DivideNode::typeAnalysis(TypeAnalysis *ta)
 {
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
-
 	auto t1 = ta->nodeType(myExp1);
 	auto t2 = ta->nodeType(myExp2);
 	// I think this is correctly handling the asFn() ??
 	if (t1->isBool() || t1->asFn() != nullptr || t1->asClass() != nullptr)
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(this->pos());
+		ta->errMathOpd(myExp1->pos());
 		return;
 	}
 	if (t2->isBool() || t2->asFn() != nullptr || t2->asClass() != nullptr)
 	{
 		ta->nodeType(this, ErrorType::produce());
-		ta->errMathOpd(this->pos());
+		ta->errMathOpd(myExp2->pos());
 		return;
 	}
 	ta->nodeType(this, BasicType::produce(INT));
@@ -768,6 +771,79 @@ void WhileStmtNode::typeAnalysis(TypeAnalysis *ta)
 	for (auto stmt: *myBody)
 		stmt->typeAnalysis(ta);
 }
+
+void MaybeStmtNode::typeAnalysis(TypeAnalysis *ta)
+{
+	myDst->typeAnalysis(ta);
+	mySrc1->typeAnalysis(ta);
+	mySrc2->typeAnalysis(ta);
+
+	auto tgtType = ta->nodeType(myDst);
+	auto src1Type = ta->nodeType(mySrc1);
+	auto src2Type = ta->nodeType(mySrc2);
+
+
+	if (tgtType->asError() || src1Type->asError()){
+		ta->nodeType(this, ErrorType::produce());
+		// --> do we wanna return here?
+	}
+
+	if ((tgtType->isBool() && src1Type->isInt()) || (src1Type->isBool() && tgtType->isInt()))
+	{
+		//Some functions are already defined for you to
+		// report type errors. Note that these functions
+		// also tell the typeAnalysis object that the
+		// analysis has failed, meaning that main.cpp
+		// will print "Type check failed" at the end
+		ta->nodeType(this, ErrorType::produce());
+		ta->errAssignOpr(mySrc1->pos());
+		return;
+	}
+
+	if ((tgtType->isBool() && src2Type->isInt()) || (src2Type->isBool() && tgtType->isInt()))
+	{
+		//Some functions are already defined for you to
+		// report type errors. Note that these functions
+		// also tell the typeAnalysis object that the
+		// analysis has failed, meaning that main.cpp
+		// will print "Type check failed" at the end
+		ta->nodeType(this, ErrorType::produce());
+		ta->errAssignOpr(mySrc2->pos());
+		return;
+	}
+
+	/*
+		TODO: how exactly to handle these? --> not sure if we can do this or not
+	*/
+	if (src1Type->isClass() || src1Type->asFn() )
+	{
+		ta->nodeType(this, ErrorType::produce());
+		ta->errAssignOpd(mySrc1->pos());
+	}
+	if (src2Type->isClass() || src2Type->asFn() )
+	{
+		ta->nodeType(this, ErrorType::produce());
+		ta->errAssignOpd(mySrc2->pos());
+	}
+
+	if (tgtType->asFn() || tgtType->isClass())
+	{
+		ta->nodeType(this, ErrorType::produce());
+		ta->errAssignOpd(myDst->pos());
+	}
+
+	if (tgtType->isImmutable())
+	{
+		ta->nodeType(this, ErrorType::produce());
+		ta->errAssignOpd(myDst->pos());
+		return;
+	}
+
+
+
+
+}
+
 
 void DeclNode::typeAnalysis(TypeAnalysis * ta){
 	TODO("Override me in the subclass");

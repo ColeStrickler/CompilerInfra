@@ -1,0 +1,16 @@
+swag : custom {
+    field1 : int;
+    field2 : bool;
+};
+
+swag2 : custom {
+    field1 : bool;
+    field2 : bool;
+};
+
+g : () -> bool {
+    a : swag;
+    b : swag2;
+
+    x : bool = a >= b;
+}
