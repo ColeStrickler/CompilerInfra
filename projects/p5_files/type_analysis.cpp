@@ -895,6 +895,11 @@ void IntLitNode::typeAnalysis(TypeAnalysis * ta){
 }
 
 
+void EhNode::typeAnalysis(TypeAnalysis *ta)
+{
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
 
 void TrueNode::typeAnalysis(TypeAnalysis *ta)
 {

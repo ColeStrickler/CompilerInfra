@@ -594,6 +594,8 @@ public:
 	bool nameAnalysis(SymbolTable * symTab) override {
 		return true;
 	};
+
+	void typeAnalysis(TypeAnalysis* ta) override;
 };
 
 class CallStmtNode : public StmtNode{

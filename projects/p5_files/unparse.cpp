@@ -372,6 +372,7 @@ void EhNode::unparse(std::ostream& out, int indent){
 	out << "eh?";
 }
 
+
 void IntLitNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	out << myNum;
