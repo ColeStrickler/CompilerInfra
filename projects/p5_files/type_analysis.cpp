@@ -61,6 +61,11 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){
 	// unset return type since we are leaving function
 	ta->currentFuncReturnType = nullptr;
 }
+void ClassDefnNode::typeAnalysis(TypeAnalysis *ta)
+{
+	return;
+}
+
 
 void CallExpNode::typeAnalysis(TypeAnalysis * ta) 
 {
@@ -378,7 +383,7 @@ void ToConsoleStmtNode::typeAnalysis(TypeAnalysis *ta)
 
 
 void ExpNode::typeAnalysis(TypeAnalysis * ta){
-	TODO("Override me in the subclass");
+	TODO("ExpNode Override me in the subclass");
 }
 
 void PlusNode::typeAnalysis(TypeAnalysis *ta)
@@ -527,6 +532,37 @@ void OrNode::typeAnalysis(TypeAnalysis *ta)
 void EqualsNode::typeAnalysis(TypeAnalysis *ta)
 {
 
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+
+
+	auto exp1Type = ta->nodeType(myExp1);
+	auto exp2Type = ta->nodeType(myExp2);
+	
+
+	if ((exp1Type->isInt() && exp2Type->isBool()) || (exp2Type->isInt() && exp1Type->isBool()))
+	{
+		ta->nodeType(this, ErrorType::produce());
+		ta->errEqOpr(pos());
+		return;
+	}
+
+	if (exp1Type->isVoid() || exp1Type->isClass() || exp1Type->asFn() != nullptr)
+	{
+		ta->nodeType(this, ErrorType::produce());
+		ta->errEqOpd(myExp1->pos());
+		return;
+	}
+
+	if (exp2Type->isVoid() || exp2Type->isClass() || exp2Type->asFn() != nullptr)
+	{
+		ta->nodeType(this, ErrorType::produce());
+		ta->errEqOpd(myExp2->pos());
+		return;
+	}
+
+
+
 	ta->nodeType(this, BasicType::produce(BOOL));
 	return;
 }
@@ -666,6 +702,7 @@ void NotNode::typeAnalysis(TypeAnalysis *ta)
 
 void IfStmtNode::typeAnalysis(TypeAnalysis *ta)
 {
+	printf("ifstmtnode\n");
 	myCond->typeAnalysis(ta);
 	auto condType = ta->nodeType(myCond);
 	if (condType->asError())
@@ -740,6 +777,31 @@ void VarDeclNode::typeAnalysis(TypeAnalysis * ta){
 	// VarDecls always pass type analysis, since they 
 	// are never used in an expression. You may choose
 	// to type them void (like this), as discussed in class
+
+	if (myInit != nullptr)
+	{
+		myInit->typeAnalysis(ta);
+		auto initType = ta->nodeType(myInit);
+		if (initType->asError())
+			goto end;
+
+		auto type = myType->getType();
+
+		if ((type->isBool() && initType->isInt()) || (type->isInt() && initType->isBool()))
+		{
+			ta->errAssignOpr(myInit->pos());
+			goto end;
+		}
+
+		if (initType->asFn() || (initType->isVoid() && !type->isVoid()))
+		{
+			ta->errAssignOpd(myInit->pos());
+			goto end;
+		}
+
+	}
+
+end:
 	ta->nodeType(this, BasicType::produce(VOID));
 }
 
@@ -755,5 +817,19 @@ void IntLitNode::typeAnalysis(TypeAnalysis * ta){
 	// yield the type INT
 	ta->nodeType(this, BasicType::produce(INT));
 }
+
+
+
+void TrueNode::typeAnalysis(TypeAnalysis *ta)
+{
+	ta->nodeType(this, BasicType::produce(BOOL));
+	return;
+}
+void FalseNode::typeAnalysis(TypeAnalysis *ta)
+{
+	ta->nodeType(this, BasicType::produce(BOOL));
+	return;
+}
+
 
 }

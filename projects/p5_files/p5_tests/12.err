@@ -1,0 +1,3 @@
+FATAL [6,9]-[6,10]: Non-bool expression used as a condition
+FATAL [16,17]-[16,20]: Arithmetic operator applied to invalid operand
+Type Analysis Failed

@@ -117,6 +117,8 @@ bool ClassDefnNode::nameAnalysis(SymbolTable * symTab){
 	return result;
 }
 
+
+
 bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool validType = myType->nameAnalysis(symTab);
 	std::string varName = ID()->getName();

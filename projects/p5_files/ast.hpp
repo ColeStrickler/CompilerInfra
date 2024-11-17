@@ -117,6 +117,7 @@ public:
 	}
 	IDNode * ID(){ return myID; }
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis* ta) override;
 private:
 	IDNode * myID;
 	std::list<DeclNode *> * myMembers;
@@ -568,6 +569,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis* ta) override;
 };
 
 class FalseNode : public ExpNode{
@@ -578,6 +580,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis* ta) override;
 };
 
 class EhNode : public ExpNode{
