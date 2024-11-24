@@ -1,0 +1,45 @@
+func : (b: bool) -> int {
+	a : int = 4;
+    a++;
+    a--;
+
+    b = b or b;
+    b = a > a;
+    b = a == a;
+    b = a >= a;
+    b = a < a;
+    b = a <= a;
+    b = a != a;
+    if (b)
+    {
+        while(a < 16)
+        {
+            a = a/4;
+            a = a*4;
+            a = a+4;
+        }
+        
+    }
+    else
+    {
+        x : bool;
+        toconsole -a;
+        x = !b;
+    }
+   
+
+    
+    return a;
+}
+
+
+
+
+main : (x: int, z : bool) -> void {
+
+    myVar : int = func(z); 
+    x = myVar - 7;
+
+    z = z != (x==4);
+
+}

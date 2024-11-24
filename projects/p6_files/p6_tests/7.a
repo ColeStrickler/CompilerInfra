@@ -1,0 +1,17 @@
+func : (b: bool) -> int {
+	a : int = 4;
+    a++;
+    a--;
+    x : bool;
+    toconsole -a;
+    x = !b;
+    return a;
+}
+
+
+
+
+main : (x: int, z : bool) -> void {
+
+    myVar : int = func(z); 
+}

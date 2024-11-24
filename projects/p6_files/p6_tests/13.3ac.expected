@@ -1,0 +1,103 @@
+[BEGIN GLOBALS]
+func
+main
+[END GLOBALS]
+[BEGIN <init> LOCALS]
+[END <init> LOCALS]
+fun_<init>: enter <init>
+lbl_0:      leave <init>
+[BEGIN func LOCALS]
+b (formal arg of 8 bytes)
+a (local var of 8 bytes)
+x (local var of 8 bytes)
+tmp0 (tmp var of 8 bytes)
+tmp1 (tmp var of 8 bytes)
+tmp2 (tmp var of 8 bytes)
+tmp3 (tmp var of 8 bytes)
+tmp4 (tmp var of 8 bytes)
+tmp5 (tmp var of 8 bytes)
+tmp6 (tmp var of 8 bytes)
+tmp7 (tmp var of 8 bytes)
+tmp8 (tmp var of 8 bytes)
+tmp9 (tmp var of 8 bytes)
+tmp10 (tmp var of 8 bytes)
+tmp11 (tmp var of 8 bytes)
+tmp12 (tmp var of 8 bytes)
+[END func LOCALS]
+fun_func:   enter func
+            getarg 1 [b]
+            [a] := 4
+            [a] := [a] ADD64 1
+            [a] := [a] SUB64 1
+            [tmp0] := [b] OR64 [b]
+            [b] := [tmp0]
+            [tmp1] := [a] GT64 [a]
+            [b] := [tmp1]
+            [tmp2] := [a] EQ64 [a]
+            [b] := [tmp2]
+            [tmp3] := [a] GTE64 [a]
+            [b] := [tmp3]
+            [tmp4] := [a] LT64 [a]
+            [b] := [tmp4]
+            [tmp5] := [a] LTE64 [a]
+            [b] := [tmp5]
+            [tmp6] := [a] NEQ64 [a]
+            [b] := [tmp6]
+            IFZ [b] GOTO lbl_2
+lbl_4:      nop
+            [tmp7] := [a] LT64 16
+            IFZ [tmp7] GOTO lbl_5
+            [tmp8] := [a] DIV64 4
+            [a] := [tmp8]
+            [tmp9] := [a] MULT64 4
+            [a] := [tmp9]
+            [tmp10] := [a] ADD64 4
+            [a] := [tmp10]
+            goto lbl_4
+lbl_5:      nop
+            goto lbl_3
+lbl_2:      nop
+            [tmp11] := NEG64 [a]
+            WRITE [tmp11]
+            [tmp12] := NOT64 [b]
+            [x] := [tmp12]
+lbl_3:      nop
+            setret [a]
+            goto lbl_1
+lbl_1:      leave func
+[BEGIN main LOCALS]
+x (formal arg of 8 bytes)
+z (formal arg of 8 bytes)
+myVar (local var of 8 bytes)
+tmp0 (tmp var of 8 bytes)
+tmp1 (tmp var of 8 bytes)
+tmp2 (tmp var of 8 bytes)
+tmp3 (tmp var of 8 bytes)
+tmp4 (tmp var of 8 bytes)
+tmp5 (tmp var of 8 bytes)
+[END main LOCALS]
+main:       enter main
+            getarg 1 [x]
+            getarg 2 [z]
+            setarg 1 [z]
+            call func
+            getret [tmp0]
+            [myVar] := [tmp0]
+            [tmp1] := [myVar] SUB64 7
+            [x] := [tmp1]
+            call randBool
+            getret [tmp2]
+            IFZ [tmp2] GOTO lbl_7
+            [tmp3] := [x] EQ64 4
+            [tmp4] := [z] NEQ64 [tmp3]
+            [z] := [tmp4]
+lbl_7:      nop
+            call randBool
+            getret [tmp5]
+            IFZ [tmp5] GOTO lbl_8
+            [x] := 5
+            goto lbl_9
+lbl_8:      nop
+            [x] := 3
+lbl_9:      nop
+lbl_6:      leave main

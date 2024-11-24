@@ -1,0 +1,9 @@
+func : (b: bool) -> int {
+	a : int = 4;
+    a++;
+    a--;
+    x : bool;
+    toconsole -a;
+    x = !b;
+    return a;
+}

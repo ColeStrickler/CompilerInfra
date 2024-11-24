@@ -1,0 +1,9 @@
+func : (b: int) -> int {
+	a : int = 4;
+    a++;
+    a--;
+
+    toconsole a;
+    fromconsole a;
+    return a;
+}
