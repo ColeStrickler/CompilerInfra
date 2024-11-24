@@ -1,0 +1,8 @@
+func : (b: int) -> int {
+	a : int = 4;
+    a++;
+    a--;
+
+
+    return a;
+}

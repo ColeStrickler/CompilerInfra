@@ -1,0 +1,4 @@
+func : (b: int) -> int {
+	a : int;
+	a = 4;
+}

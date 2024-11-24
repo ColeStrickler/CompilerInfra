@@ -1,0 +1,8 @@
+func : (b: int) -> bool {
+	a : int;
+	a = 4;
+    z : bool;
+    x : bool = true;
+
+    return false;
+}

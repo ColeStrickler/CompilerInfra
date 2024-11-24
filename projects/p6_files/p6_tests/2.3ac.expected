@@ -1,0 +1,17 @@
+[BEGIN GLOBALS]
+func
+[END GLOBALS]
+[BEGIN <init> LOCALS]
+[END <init> LOCALS]
+fun_<init>: enter <init>
+lbl_0:      leave <init>
+[BEGIN func LOCALS]
+b (formal arg of 8 bytes)
+a (local var of 8 bytes)
+[END func LOCALS]
+fun_func:   enter func
+            getarg 1 [b]
+            [a] := 4
+            setret [a]
+            goto lbl_1
+lbl_1:      leave func
