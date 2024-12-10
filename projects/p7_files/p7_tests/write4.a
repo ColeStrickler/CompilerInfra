@@ -1,4 +1,9 @@
-main : () -> void {
+fn : () -> int {
+	return 4;
+}
+
+main : () -> int {
 	a : int = 4;
-	toconsole a;
+	toconsole fn();
+	return a;
 }
