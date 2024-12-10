@@ -1,2 +1,4 @@
 main : () -> void {
+	a : int = 4;
+	toconsole a;
 }

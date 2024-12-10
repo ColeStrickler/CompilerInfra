@@ -44,14 +44,35 @@ void Procedure::allocLocals(){
 	//Allocate space for locals
 	// Iterate over each procedure and codegen it
 	//TODO(Implement me)
+	size_t locOffRBP = 16;
+	for (auto local : locals){
+		local.second->setMemoryLoc("-" + std::to_string(locOffRBP) +"(%rbp)");
+		//locOffRBP += local.second->getWidth();
+		locOffRBP += 8;
+	}
+	for (auto tmp : temps){
+		tmp->setMemoryLoc("-" + std::to_string(locOffRBP) +"(%rbp)");
+		locOffRBP += 8;
+	}
+	for (auto formal : formals){
+		formal->setMemoryLoc("-" + std::to_string(locOffRBP) +"(%rbp)");
+		locOffRBP += 8;
+	}
+	for (auto loc : addrOpds){
+		loc->setMemoryLoc("-" + std::to_string(locOffRBP) +"(%rbp)");
+		locOffRBP += 8;
+	}
 }
 
 void Procedure::toX64(std::ostream& out){
 	//Allocate all locals
-	allocLocals();
+	
 
 	enter->codegenLabels(out);
 	enter->codegenX64(out);
+	allocLocals();
+
+
 	out << "#Fn body " << myName << "\n";
 	for (auto quad : *bodyQuads){
 		quad->codegenLabels(out);
@@ -93,7 +114,14 @@ void ReadQuad::codegenX64(std::ostream& out){
 }
 
 void WriteQuad::codegenX64(std::ostream& out){
-	TODO(Implement me write)
+	// setup argument
+	std::string loc = mySrc->getMemoryLoc();
+	out << "movq " << loc << ", %rdi\n";
+	if (mySrcType->isInt())
+		out << "call printInt\n";
+	else
+		out << "call printString\n";
+	
 }
 
 void GotoQuad::codegenX64(std::ostream& out){
@@ -155,7 +183,7 @@ void SymOpd::genLoadVal(std::ostream& out, Register reg){
 }
 
 void SymOpd::genStoreVal(std::ostream& out, Register reg){
-	TODO(Implement me genstore)
+	out << "movq " << RegUtils::reg64(reg) << ", " << myLoc << "\n";
 }
 
 void SymOpd::genLoadAddr(std::ostream& out, Register reg) {
