@@ -44,7 +44,7 @@ void Procedure::allocLocals(){
 	//Allocate space for locals
 	// Iterate over each procedure and codegen it
 	//TODO(Implement me)
-	size_t locOffRBP = 16;
+	size_t locOffRBP = 24;
 	for (auto local : locals){
 		local.second->setMemoryLoc("-" + std::to_string(locOffRBP) +"(%rbp)");
 		//locOffRBP += local.second->getWidth();
@@ -112,13 +112,18 @@ void AssignQuad::codegenX64(std::ostream& out){
 }
 
 void ReadQuad::codegenX64(std::ostream& out){
-	TODO(Implement me read)
+	
+	if(myDstType->isBool())
+		out << "call getBool\n";
+	else
+		out << "call getInt\n";
+	myDst->genStoreVal(out, Register::A);
 }
 
 void WriteQuad::codegenX64(std::ostream& out){
 	// setup argument
 	std::string loc = mySrc->getMemoryLoc();
-	out << "movq " << loc << ", %rdi\n";
+	mySrc->genLoadVal(out, Register::DI);
 	if (mySrcType->isInt())
 		out << "call printInt\n";
 	else
@@ -163,11 +168,61 @@ void LeaveQuad::codegenX64(std::ostream& out){
 }
 
 void SetArgQuad::codegenX64(std::ostream& out){
-	TODO(Implement me setarg)
+	
+	Register reg;
+	switch (index)
+	{
+		case 1:
+		{
+			reg = Register::DI;
+			break;
+		}
+		case 2:
+		{
+			reg = Register::SI;
+			break;
+		}
+		case 3:
+		{
+			reg = Register::D;
+			break;
+		}
+		case 4:
+		{
+			reg = Register::C;
+			break;
+		}
+	}
+	opd->genLoadVal(out, reg);
 }
 
 void GetArgQuad::codegenX64(std::ostream& out){
-	TODO(Implement me getarg)
+
+	Register reg;
+	switch (index)
+	{
+		case 1:
+		{
+			reg = Register::DI;
+			break;
+		}
+		case 2:
+		{
+			reg = Register::SI;
+			break;
+		}
+		case 3:
+		{
+			reg = Register::D;
+			break;
+		}
+		case 4:
+		{
+			reg = Register::C;
+			break;
+		}
+	}
+	opd->genStoreVal(out, reg);
 }
 
 void SetRetQuad::codegenX64(std::ostream& out){

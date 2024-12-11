@@ -28,6 +28,7 @@ int64_t magic(){
 // for the exit quad
 
 void printInt(long int num){
+	printf("printInt\n");
 	printf("%ld", num);
 	fflush(stdout);
 }

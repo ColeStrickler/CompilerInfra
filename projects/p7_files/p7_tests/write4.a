@@ -1,9 +1,10 @@
-fn : () -> int {
-	return 4;
+fn : (a: int) -> int {
+	return a;
 }
 
 main : () -> int {
 	a : int = 4;
-	toconsole fn();
+	fromconsole a;
+	toconsole fn(a);
 	return a;
 }
